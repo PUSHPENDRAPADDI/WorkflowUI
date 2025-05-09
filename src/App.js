@@ -5,19 +5,23 @@ import IdeaModal from './pages/IdeaModal';
 import IdeaSummaryScreenWithAccordion from './pages/IdeaSummaryScreenWithAccordion';
 import PersonaCards from './pages/PersonaCard';
 import MoSCoWScreen from './pages/MoSCoWScreen';
+import { ThemeProvider } from '@emotion/react';
+import lightSkyBlueTheme from './theme';
 
 function App() {
   return (
     <Router>
-      <Layout>
-        <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path='ideaSummaryScreen' element={<IdeaSummaryScreenWithAccordion />} />
-          <Route path='persona' element={<PersonaCards />} />
-          <Route path='moscow' element={<MoSCoWScreen />} />
-        </Routes>
-      </Layout>
-      <IdeaModal />
+      <ThemeProvider theme={lightSkyBlueTheme}>
+        <Layout>
+          <Routes>
+            <Route path="/" element={<Dashboard />} />
+            <Route path='ideaSummaryScreen' element={<IdeaSummaryScreenWithAccordion />} />
+            <Route path='persona' element={<PersonaCards />} />
+            <Route path='moscow' element={<MoSCoWScreen />} />
+          </Routes>
+        </Layout>
+        <IdeaModal />
+      </ThemeProvider>
     </Router>
   );
 }

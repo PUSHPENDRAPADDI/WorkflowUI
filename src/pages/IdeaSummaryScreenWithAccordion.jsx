@@ -12,6 +12,7 @@ import {
     Accordion,
     AccordionSummary,
     AccordionDetails,
+    TextField,
 } from '@mui/material';
 
 import {
@@ -303,7 +304,7 @@ const IdeaSummaryScreenWithAccordion = () => {
     const [activeIndex, setActiveIndex] = React.useState(0);
     const [currentStep, setCurrentStep] = React.useState(0);
     const [activeStep, setActiveStep] = React.useState([]);
-
+    const [inputValue, setInputValue] = React.useState('');
     useEffect(() => {
         setActiveStep(stepSections[currentStep]?.sections || []);
     }, [currentStep]);
@@ -314,9 +315,16 @@ const IdeaSummaryScreenWithAccordion = () => {
                 <Box mb={4}>
                     <Box sx={{ p: 2, background: '#E3F2FD', borderRadius: 2 }}>
                         <Typography variant="h6">JJ</Typography>
-                        <Typography variant="subtitle1">
-                            A mobile app for training employees of a retail garment store
-                        </Typography>
+                        <TextField
+                            label="Enter your input"
+                            variant="outlined"
+                            size="small"
+                            fullWidth
+                            multiline
+                            rows={4}
+                            value={inputValue}
+                            onChange={(e) => setInputValue(e.target.value)}
+                        />
                     </Box>
                 </Box>
                 <Grid container spacing={2}>

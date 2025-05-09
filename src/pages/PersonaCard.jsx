@@ -213,12 +213,16 @@ function PersonaCard({ user }) {
                         Average daily device usage (hours)
                     </Typography>
                     <ResponsiveContainer width="100%" height={200}>
-                        <BarChart data={deviceData}>
+                        <BarChart data={deviceData} barSize={20}>
                             <CartesianGrid strokeDasharray="3 3" />
                             <XAxis dataKey="device" />
                             <YAxis />
                             <Tooltip />
-                            <Bar dataKey="hours" fill={theme.palette.primary.main} radius={[4, 4, 0, 0]} />
+                            <Bar
+                                dataKey="hours"
+                                fill={theme.palette.primary.main}
+                                radius={[4, 4, 0, 0]}
+                            />
                         </BarChart>
                     </ResponsiveContainer>
                 </Box>
