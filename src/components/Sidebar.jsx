@@ -20,9 +20,12 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
   return (
     <Drawer variant="permanent" open={isOpen}>
       <div style={{ width: isOpen ? 240 : 60, transition: '0.3s' }}>
-        <IconButton onClick={toggleSidebar}>
-          <Menu />
-        </IconButton>
+        <div style={{ display: 'flex', alignItems: 'center',gap: '8px' }}>
+          <IconButton onClick={toggleSidebar}>
+            <Menu />
+          </IconButton>
+          {/* {isOpen && <span style={{ fontWeight: 'bold', fontSize: '1.1rem' }}>Ginny AI</span>} */}
+        </div>
         <List>
           <Tooltip title="Home" placement="right">
             <ListItem button onClick={() => navigate('/')} sx={{ cursor: 'pointer' }}>

@@ -6,6 +6,7 @@ import { apiRequest, apiSuccess, apiFailure } from "../redux/silces/apiSlice";
 const useApi = (key, url, method = "GET") => {
     const dispatch = useDispatch();
     const apiState = useSelector((state) => state.apiReducer[key]);
+
     const memoizedApiState = useMemo(() => {
         return (
             apiState || {
@@ -26,7 +27,7 @@ const useApi = (key, url, method = "GET") => {
                 method,
                 data: body,
             });
-            const { status, message, data } = response.data;
+            const { status, message, data } = response;
             dispatch(apiSuccess({ key, data }));
         } catch (err) {
             const message = err.response?.data?.message || err.message || "Something went wrong";

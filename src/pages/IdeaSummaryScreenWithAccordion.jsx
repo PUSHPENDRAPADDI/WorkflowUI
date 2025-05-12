@@ -13,6 +13,7 @@ import {
     AccordionSummary,
     AccordionDetails,
     TextField,
+    ListItem,
 } from '@mui/material';
 
 import {
@@ -26,6 +27,8 @@ import {
     ExpandMore,
     Face,
 } from '@mui/icons-material';
+import useApi from '../hooks/useApi';
+import { URLCONSTANTS } from '../constants/urlConstants';
 
 const sidebarSteps = [
     'Step 1 Understanding',
@@ -308,12 +311,21 @@ const IdeaSummaryScreenWithAccordion = () => {
     useEffect(() => {
         setActiveStep(stepSections[currentStep]?.sections || []);
     }, [currentStep]);
+    const { data: setData, loading: setLoading, error: setError, fetchData: setlist } = useApi("UNDERSTANDING", `${URLCONSTANTS.UNDERSTANDING}`, "POST");
+
+    const { data: fetchedData, loading: listLoading, error: listError, fetchData: fetchlist } = useApi("UNDERSTANDINGFORGET", `${URLCONSTANTS.UNDERSTANDING}`, "GET");
+
+    // console.log(setLoading, 'THis si loading');
+
+    useEffect(() => {
+        fetchlist();
+    }, []);
 
     return (
         <Box sx={{ display: 'flex', padding: '0', gap: 2 }}>
             <Box sx={{ flexGrow: 1 }}>
-                <Box mb={4}>
-                    <Box sx={{ p: 2, background: '#E3F2FD', borderRadius: 2 }}>
+                {!fetchedData ? <Box mb={4}>
+                    <Box sx={{ p: 2, background: 'white', borderRadius: 2 }}>
                         <Typography variant="h6">JJ</Typography>
                         <TextField
                             label="Enter your input"
@@ -326,45 +338,214 @@ const IdeaSummaryScreenWithAccordion = () => {
                             onChange={(e) => setInputValue(e.target.value)}
                         />
                     </Box>
-                </Box>
-                <Grid container spacing={2}>
-                    {activeStep.map((sec, idx) => (
-                        <Grid item xs={12} key={idx}>
-                            <Accordion expanded={idx === activeIndex} onChange={() => setActiveIndex(idx)}>
-                                <AccordionSummary expandIcon={<ExpandMore />}>
-                                    <Box display="flex" alignItems="center">
-                                        {sec.icon}
-                                        <Typography variant="h6" ml={1}>
-                                            {sec.type}
-                                        </Typography>
-                                    </Box>
-                                </AccordionSummary>
-                                <AccordionDetails>
-                                    <Box component="ul" sx={{ pl: 2 }}>
-                                        {sec.description.map((point, i) => (
-                                            <li key={i}>
-                                                <Typography variant="body2">{point}</Typography>
-                                            </li>
-                                        ))}
-                                    </Box>
-                                    <Box mt={2}>
-                                        {sec.tags.map((tag) => (
-                                            <Chip key={tag} label={tag} size="small" sx={{ mr: 1, mb: 1 }} />
-                                        ))}
-                                    </Box>
-                                    <Box mt={2} display="flex" justifyContent="space-between">
-                                        <Button variant="outlined" startIcon={<Edit />}>
-                                            Edit
-                                        </Button>
-                                        <Button variant="outlined" color="error" startIcon={<Delete />}>
-                                            Delete
-                                        </Button>
-                                    </Box>
-                                </AccordionDetails>
-                            </Accordion>
-                        </Grid>
-                    ))}
-                </Grid>
+                    <Button
+                        title='Submit'
+                        variant="contained"
+                        color="primary"
+                        size="small"
+                        sx={{ mt: 2 }}
+                        onClick={() => setlist({ description: inputValue })}
+                    >Submit</Button>
+                </Box> :
+                    <Grid container spacing={2}>
+                        {fetchedData && Object.keys(fetchedData).map((sec, idx) => {
+                            const secIdentifier = fetchedData[sec];
+                            console.log(secIdentifier, "this is ");
+                            return (
+                                <Grid item xs={12} key={idx}>
+                                    <Accordion expanded={idx === activeIndex} onChange={() => setActiveIndex(idx)}>
+                                        <AccordionSummary expandIcon={<ExpandMore />}>
+                                            <Box display="flex" alignItems="center">
+                                                {sec?.icon}
+                                                <Typography variant="h6" ml={1}>
+                                                    {sec.split('.')[0].toUpperCase()}
+                                                </Typography>
+                                            </Box>
+                                        </AccordionSummary>
+                                        <AccordionDetails>
+                                            {Object.entries(secIdentifier || {}).map(([sectionKey, items]) => (
+                                                Array.isArray(items) ?
+                                                    (
+                                                        <Box key={sectionKey} mt={3}>
+                                                            <Box component="ul" sx={{ pl: 2 }}>
+                                                                {items.map((item, i) => (
+                                                                    <li key={i} style={{ marginBottom: '8px' }}>
+                                                                        <Typography variant="body1" fontWeight="bold">
+                                                                            {item.name || item.benefit || item.advantage || item.issue || item.revenue_stream || item.segment_name || item.impact || item.solution || item.strategic_positions}
+                                                                        </Typography>
+                                                                        {item.description && (
+                                                                            <Typography variant="body2">{item.description}</Typography>
+                                                                        )}
+                                                                        {item.key_metrics && (
+                                                                            <Box mt={1} ml={2}>
+                                                                                <Typography variant="subtitle2" fontWeight="bold">
+                                                                                    Metric: {item.key_metrics.metric_name}
+                                                                                </Typography>
+                                                                                <Typography variant="body2">{item.key_metrics.description}</Typography>
+                                                                            </Box>
+                                                                        )}
+                                                                        {Array.isArray(item.proposed_solutions) && item?.proposed_solutions.map((issueObj, index) => (
+                                                                            <Box key={index}>
+                                                                                <ListItem key={i} alignItems="flex-start">
+                                                                                    <ListItemText
+                                                                                        primary={<Typography variant="subtitle1">{issueObj.title}</Typography>}
+                                                                                        secondary={<Typography variant="body2" color="text.secondary">{issueObj.description}</Typography>}
+                                                                                    />
+                                                                                </ListItem>
+                                                                            </Box>
+                                                                        ))}
+                                                                        {Array.isArray(item.strategies) && item?.strategies.map((issueObj, index) => (
+                                                                            <Box key={index}>
+                                                                                <ListItem key={i} alignItems="flex-start">
+                                                                                    <ListItemText
+                                                                                        primary={<Typography variant="subtitle1">{issueObj}</Typography>}
+                                                                                    />
+                                                                                </ListItem>
+                                                                            </Box>
+                                                                        ))}
+                                                                        {Array.isArray(item.related_solutions) && (
+                                                                            <Box mt={1} ml={2}>
+                                                                                <Typography variant="subtitle2" fontWeight="bold">
+                                                                                    Related Solutions:
+                                                                                </Typography>
+                                                                                <Box>
+                                                                                    {item.related_solutions.map((sol, idx) => (
+                                                                                        <Chip
+                                                                                            key={idx}
+                                                                                            label={sol}
+                                                                                            size="small"
+                                                                                            sx={{ mr: 1, mb: 1 }}
+                                                                                        />
+                                                                                    ))}
+                                                                                </Box>
+                                                                            </Box>
+                                                                        )}
+                                                                        {Array.isArray(item.features) && (
+                                                                            <Box mt={1} ml={2}>
+                                                                                <Typography variant="subtitle2" fontWeight="bold">
+                                                                                    features:
+                                                                                </Typography>
+                                                                                <Box>
+                                                                                    {item.features.map((sol, idx) => (
+                                                                                        <Chip
+                                                                                            key={idx}
+                                                                                            label={sol}
+                                                                                            size="small"
+                                                                                            sx={{ mr: 1, mb: 1 }}
+                                                                                        />
+                                                                                    ))}
+                                                                                </Box>
+                                                                            </Box>
+                                                                        )}
+                                                                        {Array.isArray(item.key_benefits) && (
+                                                                            <Box mt={1} ml={2}>
+                                                                                <Typography variant="subtitle2" fontWeight="bold">
+                                                                                    features:
+                                                                                </Typography>
+                                                                                <Box>
+                                                                                    {item.key_benefits.map((sol, idx) => (
+                                                                                        <Chip
+                                                                                            key={idx}
+                                                                                            label={sol}
+                                                                                            size="small"
+                                                                                            sx={{ mr: 1, mb: 1 }}
+                                                                                        />
+                                                                                    ))}
+                                                                                </Box>
+                                                                            </Box>
+                                                                        )}
+                                                                        {Array.isArray(item.needs) && (
+                                                                            <Box mt={1} ml={2}>
+                                                                                <Typography variant="subtitle2" fontWeight="bold">
+                                                                                    Needs
+                                                                                </Typography>
+                                                                                <Box>
+                                                                                    {item.needs.map((sol, idx) => (
+                                                                                        <Chip
+                                                                                            key={idx}
+                                                                                            label={sol}
+                                                                                            size="small"
+                                                                                            sx={{ mr: 1, mb: 1 }}
+                                                                                        />
+                                                                                    ))}
+                                                                                </Box>
+                                                                            </Box>
+                                                                        )}
+                                                                        {Array.isArray(item.pain_points) && (
+                                                                            <Box mt={1} ml={2}>
+                                                                                <Typography variant="subtitle2" fontWeight="bold">
+                                                                                    pain_points
+                                                                                </Typography>
+                                                                                <Box>
+                                                                                    {item.pain_points.map((sol, idx) => (
+                                                                                        <Chip
+                                                                                            key={idx}
+                                                                                            label={sol}
+                                                                                            size="small"
+                                                                                            sx={{ mr: 1, mb: 1 }}
+                                                                                        />
+                                                                                    ))}
+                                                                                </Box>
+                                                                            </Box>
+                                                                        )}
+
+                                                                    </li>
+                                                                ))}
+                                                            </Box>
+                                                        </Box>
+                                                    ) : (Object.entries(items).map(([subKey, items]) => (
+                                                        <Box key={subKey} mb={2}>
+                                                            <Box component="ul" sx={{ pl: 2 }}>
+                                                                {Array.isArray(items) ?
+                                                                    items.map((item, index) => (
+                                                                        <li key={index} style={{ marginBottom: '12px' }}>
+                                                                            {item.name && <Typography variant="body1" fontWeight="bold">{item.name}</Typography>}
+                                                                            {item.benefit && <Typography variant="body1" fontWeight="bold">{item.benefit}</Typography>}
+                                                                            {item.description && <Typography variant="body2" color="text.secondary">{item.description}</Typography>}
+                                                                            {item.stringsArray && Array.isArray(item.stringsArray) && item.stringsArray.length > 0 && (
+                                                                                <ul>
+                                                                                    {item.stringsArray.map((str, subIndex) => (
+                                                                                        <li key={subIndex}>
+                                                                                            <Typography variant="body2" color="text.secondary">{str}</Typography>
+                                                                                        </li>
+                                                                                    ))}
+                                                                                </ul>
+                                                                            )}
+                                                                        </li>
+                                                                    )) :
+                                                                    Object.entries(items).map(([subSubKey, subItems]) => (
+                                                                        <Box key={subSubKey} mb={2}>
+                                                                            <List>
+                                                                                <ListItem>
+                                                                                    <ListItemText primary="Description" secondary={subItems.description} />
+                                                                                </ListItem>
+                                                                                <ListItem>
+                                                                                    <ListItemText primary="Difficulty to Copy" secondary={subItems.difficulty_to_copy} />
+                                                                                </ListItem>
+                                                                                <ListItem>
+                                                                                    <ListItemText primary="Sustainability" secondary={subItems.sustainability} />
+                                                                                </ListItem>
+                                                                            </List>
+                                                                        </Box>
+                                                                    ))}
+                                                            </Box>
+                                                        </Box>
+                                                    )))
+                                            ))}
+                                            <Box mt={2} display="flex" justifyContent="space-between">
+                                                <Button variant="outlined" startIcon={<Edit />}>
+                                                    Edit
+                                                </Button>
+                                                <Button variant="outlined" color="error" startIcon={<Delete />}>
+                                                    Delete
+                                                </Button>
+                                            </Box>
+                                        </AccordionDetails>
+                                    </Accordion>
+                                </Grid>
+                            )
+                        })}
+                    </Grid>}
             </Box>
             <SidebarSteps
                 currentStep={currentStep}

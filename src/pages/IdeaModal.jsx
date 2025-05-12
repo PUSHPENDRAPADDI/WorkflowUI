@@ -1,21 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Dialog, DialogTitle, DialogContent, DialogActions,
     TextField, Button, MenuItem, FormGroup, FormControlLabel, Checkbox, Typography
 } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { setIsCreateIdeaModalOpen } from '../redux/silces/HomeScreenSlice';
+import useApi from '../hooks/useApi';
+import { URLCONSTANTS } from '../constants/urlConstants';
 
 const IdeaModal = () => {
     const dispatch = useDispatch();
+    const { data: setIdeaData, loading: setIdeaLoading, error: setIdeaError, fetchData: fetchsetIdea } = useApi("SET_IDEAS", `http://127.0.0.1:8000/save-idea`, "POST");
+
     const open = useSelector((state) => state.homeScreenReducer.isCreateIdeaModalOpen);
     const [form, setForm] = useState({
-        ideaName: '',
-        ideaDesc: '',
+        name: '',
+        description: '',
         industry: '',
         strategy: '',
-        userGroups: [],
-        businessNature: ''
+        user_groups: [],
+        business_nature: ''
     });
 
     const handleChange = (e) => {
@@ -27,20 +31,45 @@ const IdeaModal = () => {
         const { value, checked } = event.target;
         setForm((prevForm) => ({
             ...prevForm,
-            userGroups: checked
-                ? [...prevForm.userGroups, value]
-                : prevForm.userGroups.filter((group) => group !== value),
+            user_groups: checked
+                ? [...prevForm.user_groups, value]
+                : prevForm.user_groups.filter((group) => group !== value),
         }));
     };
 
     const onClose = () => {
         dispatch(setIsCreateIdeaModalOpen());
+        setForm({
+            name: '',
+            description: '',
+            industry: '',
+            strategy: '',
+            user_groups: [],
+            business_nature: ''
+        })
+    };
 
-    }
     const handleSubmit = () => {
-        console.log('Submitting form:', form);
+        console.log('Form submitted:', form);
+        fetchsetIdea(form);
         onClose();
     };
+
+    // Form validation
+    const isFormValid = () => {
+        return (
+            form.name &&
+            form.description &&
+            form.industry &&
+            form.strategy &&
+            form.user_groups.length > 0 &&
+            form.business_nature
+        );
+    };
+
+    useEffect(() => {
+        // Check if form is valid when any field changes
+    }, [form]);
 
     return (
         <Dialog
@@ -51,7 +80,8 @@ const IdeaModal = () => {
             slotProps={{
                 paper: {
                     sx: {
-                        minHeight: '98vh', 
+                        minHeight: '98vh',
+                        backgroundColor: 'white',
                     },
                 },
             }}>
@@ -59,22 +89,22 @@ const IdeaModal = () => {
             <DialogContent dividers>
                 <TextField
                     fullWidth
-                    name="ideaName"
+                    name="name"
                     label="Name your idea"
                     variant="outlined"
                     margin="dense"
-                    value={form.ideaName}
+                    value={form.name}
                     onChange={handleChange}
                 />
                 <TextField
                     fullWidth
                     multiline
                     minRows={3}
-                    name="ideaDesc"
+                    name="description"
                     label="Describe your idea"
                     placeholder="Highlight key features, their importance, benefits, and end goal."
                     margin="dense"
-                    value={form.ideaDesc}
+                    value={form.description}
                     onChange={handleChange}
                 />
                 <TextField
@@ -111,7 +141,7 @@ const IdeaModal = () => {
                             control={
                                 <Checkbox
                                     value={group}
-                                    checked={form.userGroups.includes(group)}
+                                    checked={form.user_groups.includes(group)}
                                     onChange={handleCheckboxChange}
                                 />
                             }
@@ -123,18 +153,23 @@ const IdeaModal = () => {
                     fullWidth
                     multiline
                     minRows={2}
-                    name="businessNature"
+                    name="business_nature"
                     label="Describe the nature of your business"
                     placeholder="e.g., Business to Customer, Business to Business..."
                     margin="dense"
-                    value={form.businessNature}
+                    value={form.business_nature}
                     onChange={handleChange}
                 />
             </DialogContent>
             <DialogActions>
                 <Button onClick={onClose} color="secondary">Cancel</Button>
-                <Button onClick={handleSubmit} variant="contained" color="primary">
-                    Transform your idea
+                <Button
+                    onClick={handleSubmit}
+                    variant="contained"
+                    color="primary"
+                    disabled={!isFormValid() || setIdeaLoading}
+                >
+                    {setIdeaLoading ? 'Saving...' : 'Transform your idea'}
                 </Button>
             </DialogActions>
         </Dialog>

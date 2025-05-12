@@ -1,5 +1,6 @@
 import { Box, Grid, Typography, Card, CardMedia, CardContent, Chip } from '@mui/material';
 import useApi from '../hooks/useApi';
+import { URLCONSTANTS } from '../constants/urlConstants';
 
 const newItems = [
     {
@@ -78,8 +79,7 @@ const getTagColor = (tag) => {
 };
 
 const Dashboard = () => {
-
-    const { loading: listLoading, error: listError, fetchData: fetchlist } = useApi("list", `url`, "POST");
+    const { data: fetchedData, loading: listLoading, error: listError, fetchData: fetchlist } = useApi("UNDERSTANDINGFORGET", `${URLCONSTANTS.UNDERSTANDING}`, "GET");
 
     return (
         <Box sx={{ p: 3 }}>

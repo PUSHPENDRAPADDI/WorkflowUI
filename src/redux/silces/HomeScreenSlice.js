@@ -9,7 +9,6 @@ const homeScreenSlice = createSlice({
     initialState,
     reducers: {
         setIsCreateIdeaModalOpen: (state) => {
-            console.log("cliked ");
             state.isCreateIdeaModalOpen = !state.isCreateIdeaModalOpen;
         },
     },
