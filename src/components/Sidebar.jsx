@@ -1,6 +1,4 @@
-import React from 'react';
 import {
-  Accordion,
   Drawer,
   IconButton,
   List,
@@ -9,7 +7,7 @@ import {
   ListItemText,
   Tooltip,
 } from '@mui/material';
-import { Home, Search, Menu, Add, WorkOffOutlined, AccountBoxRounded, Person } from '@mui/icons-material';
+import { Home, Search, Menu, Add,  AccountBoxRounded, Person } from '@mui/icons-material';
 import { useDispatch } from 'react-redux';
 import { setIsCreateIdeaModalOpen } from '../redux/silces/HomeScreenSlice';
 import { useNavigate } from 'react-router-dom';
@@ -24,7 +22,6 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
           <IconButton onClick={toggleSidebar}>
             <Menu />
           </IconButton>
-          {/* {isOpen && <span style={{ fontWeight: 'bold', fontSize: '1.1rem' }}>Ginny AI</span>} */}
         </div>
         <List>
           <Tooltip title="Home" placement="right">
@@ -39,7 +36,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
               {isOpen && <ListItemText primary="Search" />}
             </ListItem>
           </Tooltip>
-          <Tooltip title="New Idea" placement="right">
+          {/* <Tooltip title="New Idea" placement="right">
             <ListItem button onClick={() => dispatch(setIsCreateIdeaModalOpen())} sx={{ cursor: 'pointer' }}>
               <ListItemIcon><Add /></ListItemIcon>
               {isOpen && <ListItemText primary="New Idea" />}
@@ -62,7 +59,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
               <ListItemIcon><Person /></ListItemIcon>
               {isOpen && <ListItemText primary='moscow' />}
             </ListItem>
-          </Tooltip>
+          </Tooltip> */}
         </List>
       </div>
     </Drawer>

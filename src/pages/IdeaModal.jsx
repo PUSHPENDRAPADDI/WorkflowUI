@@ -4,7 +4,7 @@ import {
     TextField, Button, MenuItem, FormGroup, FormControlLabel, Checkbox, Typography
 } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
-import { setIsCreateIdeaModalOpen } from '../redux/silces/HomeScreenSlice';
+import { setHomeScreenLoader, setIsCreateIdeaModalOpen } from '../redux/silces/HomeScreenSlice';
 import useApi from '../hooks/useApi';
 import { URLCONSTANTS } from '../constants/urlConstants';
 
@@ -26,7 +26,11 @@ const IdeaModal = () => {
         fetchConcept();
     }, [setIdeaData]);
     
-    console.log(setIdeaLoading, ' this is loading');
+    console.log(setIdeaLoading, 'this is set');
+
+    useEffect(() => {
+        dispatch(setHomeScreenLoader(setIdeaLoading))
+    }, [setIdeaLoading]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -56,23 +60,16 @@ const IdeaModal = () => {
     };
 
     const handleSubmit = () => {
-        console.log('Form submitted:', form);
         fetchsetIdea(form);
         onClose();
     };
 
-
-    // Form validation
     const isFormValid = () => {
         return (
             form.concept_name &&
             form.description
         );
     };
-
-    useEffect(() => {
-        // Check if form is valid when any field changes
-    }, [form]);
 
     return (
         <Dialog

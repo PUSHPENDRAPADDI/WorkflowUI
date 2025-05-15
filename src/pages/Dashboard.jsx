@@ -1,29 +1,11 @@
-import { Box, Grid, Typography, Card, CardMedia, CardContent, Chip, IconButton } from '@mui/material';
+import { Box, Grid, Typography, Card, CardMedia, CardContent, Chip, CircularProgress } from '@mui/material';
 import useApi from '../hooks/useApi';
 import { URLCONSTANTS } from '../constants/urlConstants';
 import { useEffect } from 'react';
 import AddIcon from '@mui/icons-material/Add';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { setIdeaName, setIsCreateIdeaModalOpen } from '../redux/silces/HomeScreenSlice';
 import { useNavigate } from 'react-router-dom';
-
-const newItems = [
-    {
-        title: 'Brainstorm an idea',
-        img: 'https://plus.unsplash.com/premium_photo-1683121710572-7723bd2e235d?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-        tag: 'New'
-    },
-    {
-        title: 'Create User Story',
-        img: 'https://images.unsplash.com/photo-1674027444485-cec3da58eef4?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8QUl8ZW58MHwwfDB8fHww',
-        tag: 'New'
-    },
-    {
-        title: 'Design UI Mockups',
-        img: 'https://images.unsplash.com/photo-1606857521015-7f9fcf423740?w=600&auto=format&fit=crop&q=60',
-        tag: 'Old'
-    }
-];
 
 const recentItems = [
     {
@@ -80,11 +62,13 @@ const getTagColor = (tag) => {
 
 const Dashboard = () => {
     const { data: fetchedConcept, loading: conceptLoading, error: conceptError, fetchData: fetchConcept } = useApi("GET_CONCEPTS", `${URLCONSTANTS.GET_CONCEPTS}`, "GET");
+    const isLoading = useSelector((state) => state.homeScreenReducer.homeScreenLoader);
     const navigate = useNavigate();
+
     useEffect(() => {
         fetchConcept();
     }, []);
-    console.log(fetchedConcept);
+
     const dispatch = useDispatch();
 
     const handleNavigate = (name) => {
@@ -137,10 +121,15 @@ const Dashboard = () => {
                         }}
                         onClick={() => dispatch(setIsCreateIdeaModalOpen())}
                     >
-                        <AddIcon sx={{ fontSize: 40 }} />
-                        <Typography variant="body2" sx={{ mt: 1 }}>
-                            Add New
-                        </Typography>
+                        {isLoading ? (
+                            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                <CircularProgress color="primary" />
+                            </Box>
+                        ) : (<> <AddIcon sx={{ fontSize: 40 }} />
+                            <Typography variant="body2" sx={{ mt: 1 }}>
+                                Add New
+                            </Typography>
+                        </>)}
                     </Card>
                 </Grid>
             </Grid>

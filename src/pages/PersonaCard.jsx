@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
     Tabs, Tab, Box, Typography, Avatar, Card, CardContent, Accordion, AccordionSummary,
-    AccordionDetails, Divider, useTheme
+    AccordionDetails, Divider, useTheme,
+    CircularProgress
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import useApi from '../hooks/useApi';
@@ -9,7 +10,7 @@ import { URLCONSTANTS } from '../constants/urlConstants';
 
 function PersonaCard({ user }) {
     const theme = useTheme();
-    
+
     return (
         <Card
             sx={{
@@ -93,15 +94,15 @@ function PersonaCard({ user }) {
     );
 }
 
-export default function PersonaCards() {
+export default function PersonaCards({ currentIdeaName }) {
     const [activeTab, setActiveTab] = useState(0);
-    const { data: fetchedPERSONAData, loading: PERSONALoading, error: PERSONAError, fetchData: fetchPERSONA } = useApi("PERSONA", `${URLCONSTANTS.PERSONA}`, "GET");
+    const { data: fetchedPERSONAData, loading: PERSONALoading, error: PERSONAError, fetchData: fetchPERSONA } = useApi("PERSONA", `${URLCONSTANTS.GET_PARTICULAR_AGENT_RESPONSE + currentIdeaName}/persona_agent`, "GET");
 
     const handleChange = (event, newValue) => {
         setActiveTab(newValue);
     };
-    const ke = 'persona.json';
-    const userInfo = fetchedPERSONAData && fetchedPERSONAData[ke].user_personas;
+
+    const userInfo = fetchedPERSONAData && fetchedPERSONAData.persona_agent.persona_agent;
     useEffect(() => {
         fetchPERSONA();
     }, []);
@@ -147,12 +148,17 @@ export default function PersonaCards() {
                     />
                 ))}
             </Tabs>
-            <Box sx={{
-                bgcolor: 'white',
+            {PERSONALoading ? (
+                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }} >
+                    <CircularProgress color="primary" />
+                </Box >
+            ) :
+                <Box sx={{
+                    bgcolor: 'white',
 
-            }}>
-                {userInfo && <PersonaCard user={ userInfo[activeTab]} />}
-            </Box>
+                }}>
+                    {userInfo && <PersonaCard user={userInfo[activeTab]} />}
+                </Box>}
         </Box>
     );
 }
