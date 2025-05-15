@@ -330,7 +330,7 @@ const IdeaSummaryScreenWithAccordion = () => {
     }, [currentStep]);
     const { data: setData, loading: setLoading, error: setError, fetchData: setlist } = useApi("UNDERSTANDING", `${URLCONSTANTS.UNDERSTANDING}`, "POST");
 
-    const { data: fetchedData, loading: listLoading, error: listError, fetchData: fetchlist } = useApi("UNDERSTANDINGFORGET", `${URLCONSTANTS.GET_IDEAS}${currentIdeaName}/problem_agent`, "GET");
+    const { data: fetchedData, loading: listLoading, error: listError, fetchData: fetchlist } = useApi("UNDERSTANDINGFORGET", `${URLCONSTANTS.GET_IDEAS}${currentIdeaName}`, "GET");
     const { data: proceedData, loading: proceedLoading, error: proceedError, fetchData: fetchproceed } = useApi("fetchproceed", `${URLCONSTANTS.PROCEED}`, "POST");
 
     const [fetchAgenstsData, setFetchAgentsData] = React.useState([]);
@@ -342,8 +342,6 @@ const IdeaSummaryScreenWithAccordion = () => {
     useEffect(() => {
         setFetchAgentsData({ ...fetchAgenstsData, ...proceedData?.next_agent_output })
     }, [proceedData]);
-
-    // console.log(fetchAgenstsData, 'This is fetched data');
 
     useEffect(() => {
         fetchlist();
@@ -357,7 +355,6 @@ const IdeaSummaryScreenWithAccordion = () => {
         })
     }
 
-    // console.log(activeIndex, 'This is active index');
 
     return (
         <Box sx={{ display: 'flex', padding: '0', gap: 2 }}>
@@ -405,7 +402,7 @@ const IdeaSummaryScreenWithAccordion = () => {
                                         </AccordionSummary>
                                         <AccordionDetails>
                                             {Object.entries(secIdentifier || {}).map(([sectionKey, items]) => (
-                                                Array.isArray(items) ?
+                                                Array.isArray(items) && items.length > 0 && typeof items[0] === 'object' ?
                                                     (
                                                         <Box key={sectionKey} mt={3}>
                                                             <Box component="ul" sx={{ pl: 2 }}>
@@ -428,6 +425,9 @@ const IdeaSummaryScreenWithAccordion = () => {
                                                                                 <Typography variant="body1" fontWeight="bold">
                                                                                     {item.name || item.benefit || item.advantage || item.issue || item.revenue_stream || item.segment_name || item.impact || item.solution || item.strategic_positions}
                                                                                 </Typography>
+                                                                                {item.description && (
+                                                                                    <Typography variant="body2">{item.description}</Typography>
+                                                                                )}
                                                                             </CardContent>
                                                                             <CardActions sx={{ justifyContent: "flex-end" }}>
                                                                                 <Button size="small" variant="outlined" onClick={() => dispatch(setIsEditModalOpen(item.name || item.benefit || item.advantage || item.issue || item.revenue_stream || item.segment_name || item.impact || item.solution || item.strategic_positions))}>
@@ -438,9 +438,7 @@ const IdeaSummaryScreenWithAccordion = () => {
                                                                                 </Button>
                                                                             </CardActions>
                                                                         </Card>
-                                                                        {item.description && (
-                                                                            <Typography variant="body2">{item.description}</Typography>
-                                                                        )}
+
                                                                         {item.key_metrics && (
                                                                             <Box mt={1} ml={2}>
                                                                                 <Typography variant="subtitle2" fontWeight="bold">
@@ -630,13 +628,13 @@ const IdeaSummaryScreenWithAccordion = () => {
                                                                         <Box key={subSubKey} mb={2}>
                                                                             <List>
                                                                                 <ListItem>
-                                                                                    <ListItemText primary="Description" secondary={JSON.stringify(subItems) + 'sdsds'} />
+                                                                                    <ListItemText primary="Description" secondary={subItems} />
                                                                                 </ListItem>
                                                                                 <ListItem>
-                                                                                    <ListItemText primary="Difficulty to Copy" secondary={subItems.difficulty_to_copy + 'sdsds'} />
+                                                                                    <ListItemText primary="Difficulty to Copy" secondary={subItems.difficulty_to_copy} />
                                                                                 </ListItem>
                                                                                 <ListItem>
-                                                                                    <ListItemText primary="Sustainability" secondary={subItems.sustainability + 'sdsds'} />
+                                                                                    <ListItemText primary="Sustainability" secondary={subItems.sustainability} />
                                                                                 </ListItem>
                                                                             </List>
                                                                         </Box>
@@ -645,11 +643,7 @@ const IdeaSummaryScreenWithAccordion = () => {
                                                         </Box>
                                                     )))
                                             ))}
-                                            <Box mt={2} display="flex" justifyContent="end">
-                                                <Button variant="outlined" onClick={() => handleProceed(sec)} color="primary">
-                                                    Proceed
-                                                </Button>
-                                            </Box>
+
                                         </AccordionDetails>
                                     </Accordion>
                                 </Grid>

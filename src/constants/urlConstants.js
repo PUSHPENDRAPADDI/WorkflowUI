@@ -6,7 +6,7 @@ const URLCONSTANTS = {
     PERSONA: `${BASEURL}understanding/persona`,
     FEATURES: `${BASEURL}understanding/features`,
     GET_CONCEPTS: `${BASEURL}get_concepts`,
-    GET_IDEAS:`${BASEURL}get_output/`,
+    GET_IDEAS:`${BASEURL}get_concept_outputs/`,
     PROCEED:`${BASEURL}proceed_to_next_agent`
 }
 
