@@ -7,17 +7,20 @@ import {
     Chip,
     Divider,
     List,
-    ListItemButton,
     ListItemText,
     Accordion,
     AccordionSummary,
     AccordionDetails,
     TextField,
     ListItem,
+    Tabs,
+    Tab,
+    CardContent,
+    Card,
+    CardActions,
 } from '@mui/material';
 
 import {
-    Delete,
     Edit,
     Star,
     Lightbulb,
@@ -29,6 +32,9 @@ import {
 } from '@mui/icons-material';
 import useApi from '../hooks/useApi';
 import { URLCONSTANTS } from '../constants/urlConstants';
+import EditModal from '../components/EditModal';
+import { useDispatch, useSelector } from 'react-redux';
+import { setIsEditModalOpen } from '../redux/silces/HomeScreenSlice';
 
 const sidebarSteps = [
     'Step 1 Understanding',
@@ -248,83 +254,118 @@ const stepSections = [
     },
 ];
 
-
-const SidebarSteps = ({ currentStep = 0, setCurrentStep }) => (
-    <Box
-        sx={{
-            width: 200,
-            maxWidth: 200,
-            minWidth: 200,
-            p: 1,
-            bgcolor: '#f5f5f5',
-            color: '#333',
-            borderRadius: 2,
-            boxShadow: 2,
-            height: '100%',
-        }}
-    >
-        <List dense disablePadding>
-            {sidebarSteps.map((step, index) => (
-                <ListItemButton
-                    key={step}
-                    selected={currentStep === index}
-                    sx={{
-                        borderRadius: 1,
-                        mb: 0.5,
-                        py: 0.5,
-                        px: 1,
-                        minHeight: 36,
-                        bgcolor: currentStep === index ? '#90caf9' : '#ffffff',
-                        color: currentStep === index ? '#0d47a1' : '#333',
-                        '&:hover': {
-                            bgcolor: currentStep === index ? '#64b5f6' : '#f0f0f0',
-                        },
-                        transition: 'all 0.2s ease-in-out',
-                    }}
-                    onClick={() => setCurrentStep(index)}
-                >
-                    <ListItemText
-                        primary={step}
-                        primaryTypographyProps={{ fontSize: 13 }}
-                    />
-                </ListItemButton>
-            ))}
-        </List>
-        <Divider sx={{ my: 1 }} />
-        <Button
-            fullWidth
-            variant="contained"
-            color="primary"
-            size="small"
-            sx={{ fontSize: 12 }}
+const SidebarTabs = ({ currentStep = 0, setCurrentStep }) => {
+    const handleChange = (event, newValue) => {
+        setCurrentStep(newValue);
+    };
+    return (
+        <Box
+            sx={{
+                p: 1,
+                bgcolor: '#f5f5f5',
+                color: '#333',
+                borderRadius: 2,
+                boxShadow: 2,
+            }}
         >
-            Generate Persona
-        </Button>
-    </Box>
-);
+            <Tabs
+                value={currentStep}
+                onChange={handleChange}
+                variant="scrollable"
+                scrollButtons="auto"
+                sx={{
+                    mb: 1,
+                    '& .MuiTab-root': {
+                        fontSize: 13,
+                        textTransform: 'none',
+                        minHeight: 36,
+                        px: 2,
+                        py: 1,
+                        borderRadius: 1,
+                        color: '#333',
+                        backgroundColor: '#fff',
+                        transition: 'all 0.2s ease-in-out',
+                        mr: 1,
+                    },
+                    '& .Mui-selected': {
+                        bgcolor: '#90caf9',
+                        color: '#0d47a1',
+                    },
+                    '& .MuiTab-root:hover': {
+                        backgroundColor: '#f0f0f0',
+                    },
+                    '& .Mui-selected:hover': {
+                        backgroundColor: '#64b5f6',
+                    },
+                }}
+            >
+                {sidebarSteps.map((step, index) => (
+                    <Tab key={step} label={step} />
+                ))}
+            </Tabs>
+
+            <Divider sx={{ my: 1 }} />
+            <Button
+                fullWidth
+                variant="contained"
+                color="primary"
+                size="small"
+                sx={{ fontSize: 12 }}
+            >
+                Generate Persona
+            </Button>
+        </Box>
+    );
+};
 
 const IdeaSummaryScreenWithAccordion = () => {
     const [activeIndex, setActiveIndex] = React.useState(0);
     const [currentStep, setCurrentStep] = React.useState(0);
     const [activeStep, setActiveStep] = React.useState([]);
     const [inputValue, setInputValue] = React.useState('');
+    const currentIdeaName = useSelector((state) => state.homeScreenReducer.currentIdeaName);
+    const dispatch = useDispatch();
     useEffect(() => {
         setActiveStep(stepSections[currentStep]?.sections || []);
     }, [currentStep]);
     const { data: setData, loading: setLoading, error: setError, fetchData: setlist } = useApi("UNDERSTANDING", `${URLCONSTANTS.UNDERSTANDING}`, "POST");
 
-    const { data: fetchedData, loading: listLoading, error: listError, fetchData: fetchlist } = useApi("UNDERSTANDINGFORGET", `${URLCONSTANTS.UNDERSTANDING}`, "GET");
+    const { data: fetchedData, loading: listLoading, error: listError, fetchData: fetchlist } = useApi("UNDERSTANDINGFORGET", `${URLCONSTANTS.GET_IDEAS}${currentIdeaName}/problem_agent`, "GET");
+    const { data: proceedData, loading: proceedLoading, error: proceedError, fetchData: fetchproceed } = useApi("fetchproceed", `${URLCONSTANTS.PROCEED}`, "POST");
 
-    // console.log(setLoading, 'THis si loading');
+    const [fetchAgenstsData, setFetchAgentsData] = React.useState([]);
+
+    useEffect(() => {
+        setFetchAgentsData(fetchedData)
+    }, [fetchedData, proceedData]);
+
+    useEffect(() => {
+        setFetchAgentsData({ ...fetchAgenstsData, ...proceedData?.next_agent_output })
+    }, [proceedData]);
+
+    // console.log(fetchAgenstsData, 'This is fetched data');
 
     useEffect(() => {
         fetchlist();
     }, []);
 
+    const handleProceed = (agentName) => {
+        const agentNA = agentName.includes("_") ? agentName : `${agentName}_agent`
+        fetchproceed({
+            concept_name: currentIdeaName,
+            current_agent: agentNA
+        })
+    }
+
+    // console.log(activeIndex, 'This is active index');
+
     return (
         <Box sx={{ display: 'flex', padding: '0', gap: 2 }}>
             <Box sx={{ flexGrow: 1 }}>
-                {!fetchedData ? <Box mb={4}>
+                <SidebarTabs
+                    currentStep={currentStep}
+                    setCurrentStep={setCurrentStep} />
+                {!fetchAgenstsData ? <Box mb={4}>
                     <Box sx={{ p: 2, background: 'white', borderRadius: 2 }}>
                         <Typography variant="h6">JJ</Typography>
                         <TextField
@@ -348,9 +389,9 @@ const IdeaSummaryScreenWithAccordion = () => {
                     >Submit</Button>
                 </Box> :
                     <Grid container spacing={2}>
-                        {fetchedData && Object.keys(fetchedData).map((sec, idx) => {
-                            const secIdentifier = fetchedData[sec];
-                            console.log(secIdentifier, "this is ");
+                        {fetchAgenstsData && Object.keys(fetchAgenstsData).map((sec, idx) => {
+                            const secIdentifier = fetchAgenstsData[sec];
+                            console.log(secIdentifier, 'this is identifier');
                             return (
                                 <Grid item xs={12} key={idx}>
                                     <Accordion expanded={idx === activeIndex} onChange={() => setActiveIndex(idx)}>
@@ -370,9 +411,33 @@ const IdeaSummaryScreenWithAccordion = () => {
                                                             <Box component="ul" sx={{ pl: 2 }}>
                                                                 {items.map((item, i) => (
                                                                     <li key={i} style={{ marginBottom: '8px' }}>
-                                                                        <Typography variant="body1" fontWeight="bold">
-                                                                            {item.name || item.benefit || item.advantage || item.issue || item.revenue_stream || item.segment_name || item.impact || item.solution || item.strategic_positions}
-                                                                        </Typography>
+                                                                        <Card
+                                                                            sx={{
+                                                                                margin: 2,
+                                                                                padding: 1,
+                                                                                background: "linear-gradient(to right, #e3f2fd, #bbdefb)",
+                                                                                borderRadius: 3,
+                                                                                boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
+                                                                                transition: "transform 0.2s, box-shadow 0.2s",
+                                                                                '&:hover': {
+                                                                                    transform: "translateY(-5px)",
+                                                                                    boxShadow: "0 6px 25px rgba(0, 0, 0, 0.15)"
+                                                                                }
+                                                                            }}>
+                                                                            <CardContent>
+                                                                                <Typography variant="body1" fontWeight="bold">
+                                                                                    {item.name || item.benefit || item.advantage || item.issue || item.revenue_stream || item.segment_name || item.impact || item.solution || item.strategic_positions}
+                                                                                </Typography>
+                                                                            </CardContent>
+                                                                            <CardActions sx={{ justifyContent: "flex-end" }}>
+                                                                                <Button size="small" variant="outlined" onClick={() => dispatch(setIsEditModalOpen(item.name || item.benefit || item.advantage || item.issue || item.revenue_stream || item.segment_name || item.impact || item.solution || item.strategic_positions))}>
+                                                                                    Edit
+                                                                                </Button>
+                                                                                <Button size='small' variant="outlined" color="error">
+                                                                                    Delete
+                                                                                </Button>
+                                                                            </CardActions>
+                                                                        </Card>
                                                                         {item.description && (
                                                                             <Typography variant="body2">{item.description}</Typography>
                                                                         )}
@@ -499,8 +564,56 @@ const IdeaSummaryScreenWithAccordion = () => {
                                                                 {Array.isArray(items) ?
                                                                     items.map((item, index) => (
                                                                         <li key={index} style={{ marginBottom: '12px' }}>
-                                                                            {item.name && <Typography variant="body1" fontWeight="bold">{item.name}</Typography>}
-                                                                            {item.benefit && <Typography variant="body1" fontWeight="bold">{item.benefit}</Typography>}
+                                                                            {item.name && <Card
+                                                                                sx={{
+                                                                                    margin: 2,
+                                                                                    padding: 1,
+                                                                                    background: "linear-gradient(to right, #e3f2fd, #bbdefb)",
+                                                                                    borderRadius: 3,
+                                                                                    boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
+                                                                                    transition: "transform 0.2s, box-shadow 0.2s",
+                                                                                    '&:hover': {
+                                                                                        transform: "translateY(-5px)",
+                                                                                        boxShadow: "0 6px 25px rgba(0, 0, 0, 0.15)"
+                                                                                    }
+                                                                                }}>
+                                                                                <CardContent>
+                                                                                    <Typography variant="body1" fontWeight="bold">{item.name}</Typography>
+                                                                                </CardContent>
+                                                                                <CardActions sx={{ justifyContent: "flex-end" }}>
+                                                                                    <Button size="small" variant="outlined" onClick={() => console.log("Edit button clicked")}>
+                                                                                        Edit
+                                                                                    </Button>
+                                                                                    <Button size='small' variant="outlined" color="error">
+                                                                                        Delete
+                                                                                    </Button>
+                                                                                </CardActions>
+                                                                            </Card>}
+                                                                            {item.benefit && <Card
+                                                                                sx={{
+                                                                                    margin: 2,
+                                                                                    padding: 1,
+                                                                                    background: "linear-gradient(to right, #e3f2fd, #bbdefb)",
+                                                                                    borderRadius: 3,
+                                                                                    boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
+                                                                                    transition: "transform 0.2s, box-shadow 0.2s",
+                                                                                    '&:hover': {
+                                                                                        transform: "translateY(-5px)",
+                                                                                        boxShadow: "0 6px 25px rgba(0, 0, 0, 0.15)"
+                                                                                    }
+                                                                                }}>
+                                                                                <CardContent>
+                                                                                    <Typography variant="body1" fontWeight="bold">{item.benefit}</Typography>
+                                                                                </CardContent>
+                                                                                <CardActions sx={{ justifyContent: "flex-end" }}>
+                                                                                    <Button size="small" variant="outlined" onClick={() => console.log("Edit button clicked")}>
+                                                                                        Edit
+                                                                                    </Button>
+                                                                                    <Button size='small' variant="outlined" color="error">
+                                                                                        Delete
+                                                                                    </Button>
+                                                                                </CardActions>
+                                                                            </Card>}
                                                                             {item.description && <Typography variant="body2" color="text.secondary">{item.description}</Typography>}
                                                                             {item.stringsArray && Array.isArray(item.stringsArray) && item.stringsArray.length > 0 && (
                                                                                 <ul>
@@ -517,13 +630,13 @@ const IdeaSummaryScreenWithAccordion = () => {
                                                                         <Box key={subSubKey} mb={2}>
                                                                             <List>
                                                                                 <ListItem>
-                                                                                    <ListItemText primary="Description" secondary={subItems.description} />
+                                                                                    <ListItemText primary="Description" secondary={JSON.stringify(subItems) + 'sdsds'} />
                                                                                 </ListItem>
                                                                                 <ListItem>
-                                                                                    <ListItemText primary="Difficulty to Copy" secondary={subItems.difficulty_to_copy} />
+                                                                                    <ListItemText primary="Difficulty to Copy" secondary={subItems.difficulty_to_copy + 'sdsds'} />
                                                                                 </ListItem>
                                                                                 <ListItem>
-                                                                                    <ListItemText primary="Sustainability" secondary={subItems.sustainability} />
+                                                                                    <ListItemText primary="Sustainability" secondary={subItems.sustainability + 'sdsds'} />
                                                                                 </ListItem>
                                                                             </List>
                                                                         </Box>
@@ -532,12 +645,9 @@ const IdeaSummaryScreenWithAccordion = () => {
                                                         </Box>
                                                     )))
                                             ))}
-                                            <Box mt={2} display="flex" justifyContent="space-between">
-                                                <Button variant="outlined" startIcon={<Edit />}>
-                                                    Edit
-                                                </Button>
-                                                <Button variant="outlined" color="error" startIcon={<Delete />}>
-                                                    Delete
+                                            <Box mt={2} display="flex" justifyContent="end">
+                                                <Button variant="outlined" onClick={() => handleProceed(sec)} color="primary">
+                                                    Proceed
                                                 </Button>
                                             </Box>
                                         </AccordionDetails>
@@ -547,9 +657,7 @@ const IdeaSummaryScreenWithAccordion = () => {
                         })}
                     </Grid>}
             </Box>
-            <SidebarSteps
-                currentStep={currentStep}
-                setCurrentStep={setCurrentStep} />
+            <EditModal />
         </Box>
     );
 };

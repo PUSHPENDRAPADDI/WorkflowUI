@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
     Dialog, DialogTitle, DialogContent, DialogActions,
     TextField, Button, MenuItem, FormGroup, FormControlLabel, Checkbox, Typography
@@ -10,17 +10,23 @@ import { URLCONSTANTS } from '../constants/urlConstants';
 
 const IdeaModal = () => {
     const dispatch = useDispatch();
-    const { data: setIdeaData, loading: setIdeaLoading, error: setIdeaError, fetchData: fetchsetIdea } = useApi("SET_IDEAS", `http://127.0.0.1:8000/save-idea`, "POST");
+    const { data: setIdeaData, loading: setIdeaLoading, error: setIdeaError, fetchData: fetchsetIdea } = useApi("SET_IDEAS", `http://localhost:8000/add_concept`, "POST");
+    const { data: fetchedConcept, loading: conceptLoading, error: conceptError, fetchData: fetchConcept } = useApi("GET_CONCEPTS", `${URLCONSTANTS.GET_CONCEPTS}`, "GET");
 
     const open = useSelector((state) => state.homeScreenReducer.isCreateIdeaModalOpen);
     const [form, setForm] = useState({
-        name: '',
+        concept_name: '',
         description: '',
         industry: '',
         strategy: '',
         user_groups: [],
         business_nature: ''
     });
+    useEffect(() => {
+        fetchConcept();
+    }, [setIdeaData]);
+    
+    console.log(setIdeaLoading, ' this is loading');
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -40,7 +46,7 @@ const IdeaModal = () => {
     const onClose = () => {
         dispatch(setIsCreateIdeaModalOpen());
         setForm({
-            name: '',
+            concept_name: '',
             description: '',
             industry: '',
             strategy: '',
@@ -55,15 +61,12 @@ const IdeaModal = () => {
         onClose();
     };
 
+
     // Form validation
     const isFormValid = () => {
         return (
-            form.name &&
-            form.description &&
-            form.industry &&
-            form.strategy &&
-            form.user_groups.length > 0 &&
-            form.business_nature
+            form.concept_name &&
+            form.description
         );
     };
 
@@ -89,11 +92,11 @@ const IdeaModal = () => {
             <DialogContent dividers>
                 <TextField
                     fullWidth
-                    name="name"
+                    name="concept_name"
                     label="Name your idea"
                     variant="outlined"
                     margin="dense"
-                    value={form.name}
+                    value={form.concept_name}
                     onChange={handleChange}
                 />
                 <TextField

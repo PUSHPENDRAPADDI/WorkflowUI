@@ -1,6 +1,11 @@
-import { Box, Grid, Typography, Card, CardMedia, CardContent, Chip } from '@mui/material';
+import { Box, Grid, Typography, Card, CardMedia, CardContent, Chip, IconButton } from '@mui/material';
 import useApi from '../hooks/useApi';
 import { URLCONSTANTS } from '../constants/urlConstants';
+import { useEffect } from 'react';
+import AddIcon from '@mui/icons-material/Add';
+import { useDispatch } from 'react-redux';
+import { setIdeaName, setIsCreateIdeaModalOpen } from '../redux/silces/HomeScreenSlice';
+import { useNavigate } from 'react-router-dom';
 
 const newItems = [
     {
@@ -17,11 +22,6 @@ const newItems = [
         title: 'Design UI Mockups',
         img: 'https://images.unsplash.com/photo-1606857521015-7f9fcf423740?w=600&auto=format&fit=crop&q=60',
         tag: 'Old'
-    },
-    {
-        title: 'Research Competitors',
-        img: 'https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=600&auto=format&fit=crop&q=60',
-        tag: 'New'
     }
 ];
 
@@ -79,7 +79,18 @@ const getTagColor = (tag) => {
 };
 
 const Dashboard = () => {
-    const { data: fetchedData, loading: listLoading, error: listError, fetchData: fetchlist } = useApi("UNDERSTANDINGFORGET", `${URLCONSTANTS.UNDERSTANDING}`, "GET");
+    const { data: fetchedConcept, loading: conceptLoading, error: conceptError, fetchData: fetchConcept } = useApi("GET_CONCEPTS", `${URLCONSTANTS.GET_CONCEPTS}`, "GET");
+    const navigate = useNavigate();
+    useEffect(() => {
+        fetchConcept();
+    }, []);
+    console.log(fetchedConcept);
+    const dispatch = useDispatch();
+
+    const handleNavigate = (name) => {
+        dispatch(setIdeaName(name))
+        navigate('/ideaSummaryScreen')
+    }
 
     return (
         <Box sx={{ p: 3 }}>
@@ -87,22 +98,51 @@ const Dashboard = () => {
                 Let's craft something new today !
             </Typography>
             <Grid container spacing={2}>
-                {newItems.map((item, index) => (
-                    <Grid item xs={12} sm={6} md={3} key={index}>
+                {fetchedConcept?.projects && fetchedConcept?.projects.map((item, index) => (
+                    <Grid item xs={12} sm={6} md={3} key={index} onClick={() => handleNavigate(item.name)}>
                         <Card>
-                            <CardMedia component="img" height="140" image={item.img} />
+                            <CardMedia component="img" height="140" image={'https://images.unsplash.com/photo-1674027444485-cec3da58eef4?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8QUl8ZW58MHwwfDB8fHww'} />
                             <CardContent>
                                 <Chip
-                                    label={item.tag}
-                                    color={getTagColor(item.tag)}
+                                    label='New'
+                                    color='primary'
                                     size="small"
                                     sx={{ mb: 1 }}
                                 />
-                                <Typography>{item.title}</Typography>
+                                <Typography>{item.name}</Typography>
                             </CardContent>
                         </Card>
                     </Grid>
                 ))}
+                <Grid item xs={12} sm={6} md={3}>
+                    <Card
+                        sx={{
+                            height: '100%',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            p: 2,
+                            border: '1px solid #90caf9',
+                            borderRadius: 2,
+                            boxShadow: 3,
+                            textAlign: 'center',
+                            color: '#1976d2',
+                            transition: '0.3s',
+                            '&:hover': {
+                                backgroundColor: '#e3f2fd',
+                                boxShadow: 6,
+                                cursor: 'pointer',
+                            },
+                        }}
+                        onClick={() => dispatch(setIsCreateIdeaModalOpen())}
+                    >
+                        <AddIcon sx={{ fontSize: 40 }} />
+                        <Typography variant="body2" sx={{ mt: 1 }}>
+                            Add New
+                        </Typography>
+                    </Card>
+                </Grid>
             </Grid>
             <Typography variant="h6" color="primary" sx={{ mt: 4 }} gutterBottom>
                 Recent creations
