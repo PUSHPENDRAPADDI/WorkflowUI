@@ -28,7 +28,7 @@ function EpicTabs({ currentIdeaName }) {
     };
 
     const handlePublish = () => {
-        publishJiraEPICS({ concept_name: currentIdeaName })
+        publishJiraEPICS();
     }
 
     useEffect(() => {

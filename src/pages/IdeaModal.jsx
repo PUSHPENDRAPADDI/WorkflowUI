@@ -25,8 +25,6 @@ const IdeaModal = () => {
     useEffect(() => {
         fetchConcept();
     }, [setIdeaData]);
-    
-    console.log(setIdeaLoading, 'this is set');
 
     useEffect(() => {
         dispatch(setHomeScreenLoader(setIdeaLoading))

@@ -106,7 +106,7 @@ const SidebarTabs = ({ currentStep = 0, setCurrentStep, currentIdeaName, agentNa
                 value={feedback}
                 onChange={(e) => setFeedback(e.target.value)}
             />}
-            <Box sx={{
+           {currentStep !== 3 && <Box sx={{
                 display: 'flex',
                 gap: 2
             }}>
@@ -129,7 +129,8 @@ const SidebarTabs = ({ currentStep = 0, setCurrentStep, currentIdeaName, agentNa
                     onClick={handleProceedToNext}
                 >
                     Generate {sidebarSteps[currentStep + 1]}
-                </Button></Box>
+                </Button>
+            </Box>}
         </Box>
     );
 };
@@ -254,7 +255,7 @@ const IdeaSummaryScreenWithAccordion = () => {
                     <MoSCoWScreen currentIdeaName={currentIdeaName} />
                 </Grid>) :
                     <Grid>
-                        <EpicTabs currentIdeaName={currentIdeaName}/>
+                        <EpicTabs currentIdeaName={currentIdeaName} />
                     </Grid>
                 }
             </Box>
