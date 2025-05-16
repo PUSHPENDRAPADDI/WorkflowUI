@@ -69,6 +69,9 @@ const EditModal = () => {
                     label="Description"
                     name="des"
                     fullWidth
+                    multiline
+                    minRows={3}
+                    maxRows={10}
                     value={editData?.des || ""}
                     onChange={handleChange}
                 />
