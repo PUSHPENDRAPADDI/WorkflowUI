@@ -16,11 +16,7 @@ const IdeaModal = () => {
     const open = useSelector((state) => state.homeScreenReducer.isCreateIdeaModalOpen);
     const [form, setForm] = useState({
         concept_name: '',
-        description: '',
-        industry: '',
-        strategy: '',
-        user_groups: [],
-        business_nature: ''
+        description: ''
     });
     useEffect(() => {
         fetchConcept();
@@ -50,10 +46,6 @@ const IdeaModal = () => {
         setForm({
             concept_name: '',
             description: '',
-            industry: '',
-            strategy: '',
-            user_groups: [],
-            business_nature: ''
         })
     };
 
@@ -78,17 +70,17 @@ const IdeaModal = () => {
             slotProps={{
                 paper: {
                     sx: {
-                        minHeight: '98vh',
+                        minHeight: '60vh',
                         backgroundColor: 'white',
                     },
                 },
             }}>
-            <DialogTitle>Create New Idea</DialogTitle>
+            <DialogTitle>Create New Concept</DialogTitle>
             <DialogContent dividers>
                 <TextField
                     fullWidth
                     name="concept_name"
-                    label="Name your idea"
+                    label="Name your Concept"
                     variant="outlined"
                     margin="dense"
                     value={form.concept_name}
@@ -99,63 +91,10 @@ const IdeaModal = () => {
                     multiline
                     minRows={3}
                     name="description"
-                    label="Describe your idea"
+                    label="Describe your Concept"
                     placeholder="Highlight key features, their importance, benefits, and end goal."
                     margin="dense"
                     value={form.description}
-                    onChange={handleChange}
-                />
-                <TextField
-                    select
-                    fullWidth
-                    name="industry"
-                    label="Select the industry"
-                    margin="dense"
-                    value={form.industry}
-                    onChange={handleChange}
-                >
-                    {['Education', 'Healthcare', 'Finance', 'Technology'].map((industry) => (
-                        <MenuItem key={industry} value={industry}>{industry}</MenuItem>
-                    ))}
-                </TextField>
-                <TextField
-                    select
-                    fullWidth
-                    name="strategy"
-                    label="Choose your strategy"
-                    margin="dense"
-                    value={form.strategy}
-                    onChange={handleChange}
-                >
-                    {['B2B', 'B2C', 'Freemium', 'Subscription', 'Ad-based'].map((strategy) => (
-                        <MenuItem key={strategy} value={strategy}>{strategy}</MenuItem>
-                    ))}
-                </TextField>
-                <Typography variant="subtitle2" sx={{ mt: 2 }}>Select user groups</Typography>
-                <FormGroup row>
-                    {['Business Users', 'End Consumers', 'Technical Users', 'Creative Users', 'Government Users'].map((group) => (
-                        <FormControlLabel
-                            key={group}
-                            control={
-                                <Checkbox
-                                    value={group}
-                                    checked={form.user_groups.includes(group)}
-                                    onChange={handleCheckboxChange}
-                                />
-                            }
-                            label={group}
-                        />
-                    ))}
-                </FormGroup>
-                <TextField
-                    fullWidth
-                    multiline
-                    minRows={2}
-                    name="business_nature"
-                    label="Describe the nature of your business"
-                    placeholder="e.g., Business to Customer, Business to Business..."
-                    margin="dense"
-                    value={form.business_nature}
                     onChange={handleChange}
                 />
             </DialogContent>
@@ -167,7 +106,7 @@ const IdeaModal = () => {
                     color="primary"
                     disabled={!isFormValid() || setIdeaLoading}
                 >
-                    {setIdeaLoading ? 'Saving...' : 'Transform your idea'}
+                    {setIdeaLoading ? 'Saving...' : 'Transform your Concept'}
                 </Button>
             </DialogActions>
         </Dialog>

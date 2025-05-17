@@ -8,10 +8,20 @@ import {
     Typography,
     Chip,
     Grid,
-    CircularProgress
+    CircularProgress,
+    IconButton,
+    Menu,
+    MenuItem
 } from '@mui/material';
 import useApi from '../hooks/useApi';
 import { URLCONSTANTS } from '../constants/urlConstants';
+import EditIcon from '@mui/icons-material/Edit';
+import { useDispatch, useSelector } from 'react-redux';
+import { setFeatureEditModalOpen } from '../redux/silces/HomeScreenSlice';
+import FeatureEditModal from '../components/FeatureEditModal';
+import DeleteIcon from '@mui/icons-material/Delete';
+import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 
 const tabLabels = {
     MUST_HAVE: 'Must Have 🔥',
@@ -20,23 +30,70 @@ const tabLabels = {
     "WON'T_HAVE": "Won't Have 🚫"
 }
 
-
 const MoSCoWScreen = ({ currentIdeaName }) => {
+    const dispatch = useDispatch()
     const [activeTab, setActiveTab] = useState('MUST_HAVE');
+    const [open, setOpen] = useState(false);
+    const [deleteDetails, setDeleteDetails] = useState(null);
+    const formDataFromReducer = useSelector((state) => state.homeScreenReducer.featureEditDetails);
     const { data: fetchedFeaturesData, loading: featuresLoading, error: FeaturesError, fetchData: fetchFeatures } = useApi("Features", `${URLCONSTANTS.GET_PARTICULAR_AGENT_RESPONSE + currentIdeaName}/features_list_agent`, "GET");
+    const [anchorEl, setAnchorEl] = useState(null);
+    const openOption = Boolean(anchorEl);
+
+    const handleClick = (event) => {
+        setAnchorEl(event.currentTarget);
+        console.log(activeTab);
+
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
+    const {
+        data: updatedFeature,
+        loading: updateFeatureLoading,
+        error: updateFeatureError,
+        fetchData: updateFeatureFun
+    } = useApi(
+        "UPDATEFEATURE",
+        `${URLCONSTANTS.UPDATE_ENTRY + currentIdeaName}/features_list_agent/${formDataFromReducer?.id}`,
+        "PUT"
+    );
+    const { data: deleteFeature, loading: deleteFeatureLoading, error: deleteFeatureError, fetchData: deleteFeatureEntryFun } = useApi("DeleteFeatureENTRY", `${URLCONSTANTS.DELETE_ENTRY + currentIdeaName}/features_list_agent/${deleteDetails?.id}`, "DELETE");
+    const featureData = fetchedFeaturesData && fetchedFeaturesData?.features_list_agent?.features_list;
+    const filteredOptionsValues = Object.values(tabLabels).filter(label => label !== tabLabels[activeTab]);
 
     const handleTabChange = (event, newValue) => {
         setActiveTab(newValue);
     };
 
-    const featureData = fetchedFeaturesData && fetchedFeaturesData?.features_list_agent?.features_list;
+    const handleFeatureEdit = (editItem) => {
+        dispatch(setFeatureEditModalOpen(editItem))
+    }
+
+
+    const handleEditFeature = (item) => {
+        updateFeatureFun(item)
+    }
+
     useEffect(() => {
         fetchFeatures();
-    }, []);
+    }, [updatedFeature, deleteFeature]);
+
+    const handleFeatureDelete = (item) => {
+        setOpen(true);
+        setDeleteDetails({ id: item?.id, sec: item?.name });
+    }
+
+    const handleFeatureWithConfirmationDelete = () => {
+        deleteFeatureEntryFun();
+        setOpen(false);
+    }
 
     return (
         featuresLoading ? (
-            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }} >
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '30px' }} >
                 <CircularProgress color="primary" />
             </Box >
         ) :
@@ -85,7 +142,8 @@ const MoSCoWScreen = ({ currentIdeaName }) => {
                                         height: 250,
                                         display: 'flex',
                                         flexDirection: 'column',
-                                        justifyContent: 'space-between'
+                                        justifyContent: 'space-between',
+                                        position: 'relative'
                                     }}
                                 >
                                     <CardContent sx={{ flexGrow: 1 }}>
@@ -101,10 +159,83 @@ const MoSCoWScreen = ({ currentIdeaName }) => {
                                             ))}
                                         </Box>
                                     </CardContent>
+                                    <IconButton
+                                        onClick={() => handleFeatureEdit(feature)}
+                                        sx={{
+                                            position: 'absolute',
+                                            top: 12,
+                                            right: 85,
+                                            backgroundColor: 'white',
+                                            boxShadow: 1,
+                                            '&:hover': {
+                                                backgroundColor: '#f5f5f5',
+                                            },
+                                        }}
+                                        size="small"
+                                    >
+                                        <EditIcon fontSize="small" />
+                                    </IconButton>
+                                    <IconButton
+                                        onClick={() => handleFeatureDelete(feature)}
+                                        sx={{
+                                            position: 'absolute',
+                                            top: 12,
+                                            right: 45,
+                                            backgroundColor: 'white',
+                                            boxShadow: 1,
+                                            '&:hover': {
+                                                backgroundColor: '#f5f5f5',
+                                            },
+                                            color: 'red'
+                                        }}
+                                        size="small"
+                                    >
+                                        <DeleteIcon fontSize="small" />
+                                    </IconButton >
+                                    <IconButton
+                                        sx={{
+                                            position: 'absolute',
+                                            top: 12,
+                                            right: 5,
+                                            backgroundColor: 'white',
+                                            boxShadow: 1,
+                                            '&:hover': {
+                                                backgroundColor: '#f5f5f5',
+                                            },
+                                        }}
+                                        size="small"
+                                        onClick={handleClick}>
+                                        <MoreVertIcon fontSize="small" />
+                                    </IconButton>
+                                    <Menu
+                                        anchorEl={anchorEl}
+                                        open={openOption}
+                                        onClose={handleClose}
+                                        anchorOrigin={{
+                                            vertical: 'top',
+                                            horizontal: 'right',
+                                        }}
+                                        transformOrigin={{
+                                            vertical: 'top',
+                                            horizontal: 'right',
+                                        }}
+                                    >
+                                        {filteredOptionsValues.map((item, index) => {
+                                            return (
+                                                <MenuItem key={index} onClick={handleClose}>{item}</MenuItem>
+                                            )
+                                        })}
+                                    </Menu>
+                                    <ConfirmDeleteModal
+                                        open={open}
+                                        onClose={() => setOpen(false)}
+                                        onConfirm={handleFeatureWithConfirmationDelete}
+                                        itemName={deleteDetails} />
                                 </Card>
                             </Grid>
                         ))}
                     </Grid>
+                    <FeatureEditModal handleEditFeature={handleEditFeature} />
                 </Box>
             </Box>
     );

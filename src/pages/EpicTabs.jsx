@@ -92,9 +92,20 @@ function EpicTabs({ currentIdeaName }) {
                         variant="contained"
                         color="primary"
                         onClick={handlePublish}
-                        sx={{ mt: 2 }}
+                        sx={{ mt: 2, position: 'relative' }}
+                        disabled={publishJiraLoading}
                     >
                         Publish Jira
+                        {publishJiraLoading && (
+                            <CircularProgress
+                                size={20}
+                                color="inherit"
+                                sx={{
+                                    top: '50%',
+                                    transform: 'translateY(-50%)',
+                                }}
+                            />
+                        )}
                     </Button>
                 </>
             )}

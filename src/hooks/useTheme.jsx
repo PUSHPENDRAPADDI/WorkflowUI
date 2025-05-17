@@ -4,7 +4,7 @@ const useCustomTheme = () => {
     const theme = useTheme();
     return {
         ...theme,
-        isLightSkyBlue: theme.palette.primary.main === '#87CEFA',
+        isLightWhitishGray: theme.palette.primary.main === '#f5f5f5',
     };
 };
 

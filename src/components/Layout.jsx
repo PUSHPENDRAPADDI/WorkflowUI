@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Box } from '@mui/material';
 import Sidebar from './Sidebar';
+import { ToastContainer } from 'react-toastify';
 
 const Layout = ({ children }) => {
     const [isOpen, setIsOpen] = useState(true);
@@ -13,6 +14,7 @@ const Layout = ({ children }) => {
             <Box flexGrow={1} ml={isOpen ? 30 : 10} p={3} transition="0.3s">
                 {children}
             </Box>
+            <ToastContainer/>
         </Box>
     );
 };

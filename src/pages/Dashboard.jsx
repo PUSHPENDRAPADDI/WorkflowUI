@@ -84,16 +84,27 @@ const Dashboard = () => {
             <Grid container spacing={2}>
                 {fetchedConcept?.projects && fetchedConcept?.projects.map((item, index) => (
                     <Grid item xs={12} sm={6} md={3} key={index} onClick={() => handleNavigate(item.name)}>
-                        <Card>
-                            <CardMedia component="img" height="140" image={'https://images.unsplash.com/photo-1674027444485-cec3da58eef4?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8QUl8ZW58MHwwfDB8fHww'} />
+                        <Card  sx={{
+                            height: '100%',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            p: 2,
+                            // border: '1px solid #90caf9',
+                            borderRadius: 2,
+                            boxShadow: 3,
+                            textAlign: 'center',
+                            // color: '#1976d2',
+                            transition: '0.3s',
+                            '&:hover': {
+                                backgroundColor: '#e3f2fd',
+                                boxShadow: 6,
+                                cursor: 'pointer',
+                            },
+                        }}>
                             <CardContent>
-                                <Chip
-                                    label='New'
-                                    color='primary'
-                                    size="small"
-                                    sx={{ mb: 1 }}
-                                />
-                                <Typography>{item.name}</Typography>
+                                <Typography>{item.name.replace(/_/g, ' ')}</Typography>
                             </CardContent>
                         </Card>
                     </Grid>
@@ -107,11 +118,11 @@ const Dashboard = () => {
                             alignItems: 'center',
                             justifyContent: 'center',
                             p: 2,
-                            border: '1px solid #90caf9',
+                            // border: '1px solid #90caf9',
                             borderRadius: 2,
                             boxShadow: 3,
                             textAlign: 'center',
-                            color: '#1976d2',
+                            // color: '#1976d2',
                             transition: '0.3s',
                             '&:hover': {
                                 backgroundColor: '#e3f2fd',
@@ -127,7 +138,7 @@ const Dashboard = () => {
                             </Box>
                         ) : (<> <AddIcon sx={{ fontSize: 40 }} />
                             <Typography variant="body2" sx={{ mt: 1 }}>
-                                Add New
+                                Add New Concept
                             </Typography>
                         </>)}
                     </Card>
@@ -139,17 +150,28 @@ const Dashboard = () => {
             <Grid container spacing={2}>
                 {recentItems.map((item, index) => (
                     <Grid item xs={12} sm={6} md={3} key={index}>
-                        <Card>
-                            <CardMedia component="img" height="140" image={item.img} />
+                        <Card  sx={{
+                            height: '100%',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            p: 2,
+                            // border: '1px solid #90caf9',
+                            borderRadius: 2,
+                            boxShadow: 3,
+                            textAlign: 'center',
+                            // color: '#1976d2',
+                            transition: '0.3s',
+                            '&:hover': {
+                                backgroundColor: '#e3f2fd',
+                                boxShadow: 6,
+                                cursor: 'pointer',
+                            },
+                        }}>
                             <CardContent>
                                 <Typography fontWeight="bold">{item.title}</Typography>
                                 <Typography variant="body2">{item.subtitle}</Typography>
-                                <Chip
-                                    label={item.status}
-                                    color={getTagColor(item.status)}
-                                    size="small"
-                                    sx={{ mt: 1 }}
-                                />
                             </CardContent>
                         </Card>
                     </Grid>

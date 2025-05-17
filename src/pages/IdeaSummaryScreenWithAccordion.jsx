@@ -52,6 +52,10 @@ const SidebarTabs = ({ currentStep = 0, setCurrentStep, currentIdeaName, agentNa
         }
     }
 
+    const handleTabChange = (event, newValue) => {
+        setCurrentStep(newValue);
+    };
+
     return (
         <Box
             sx={{
@@ -60,10 +64,12 @@ const SidebarTabs = ({ currentStep = 0, setCurrentStep, currentIdeaName, agentNa
                 color: '#333',
                 borderRadius: 2,
                 boxShadow: 2,
+                marginBottom: "15px"
             }}
         >
             <Tabs
                 value={currentStep}
+                onChange={handleTabChange}
                 variant="scrollable"
                 scrollButtons="auto"
                 sx={{
@@ -92,12 +98,12 @@ const SidebarTabs = ({ currentStep = 0, setCurrentStep, currentIdeaName, agentNa
                     },
                 }}
             >
-                {sidebarSteps.map((step) => (
-                    <Tab key={step} label={step} />
+                {sidebarSteps.map((step, index) => (
+                    <Tab key={step} label={step} value={index} />
                 ))}
             </Tabs>
             <Divider sx={{ my: 1 }} />
-            {feedbackIsShown && <TextField
+            {(feedbackIsShown && currentStep !== 3) && <TextField
                 fullWidth
                 name="description"
                 label="Describe your feedback"
@@ -106,22 +112,21 @@ const SidebarTabs = ({ currentStep = 0, setCurrentStep, currentIdeaName, agentNa
                 value={feedback}
                 onChange={(e) => setFeedback(e.target.value)}
             />}
-           {currentStep !== 3 && <Box sx={{
+            {currentStep !== 3 && <Box sx={{
                 display: 'flex',
-                gap: 2
+                justifyContent: 'center',
+                gap: 2,
             }}>
                 <Button
-                    fullWidth
                     variant="contained"
                     color="primary"
                     size="small"
                     sx={{ fontSize: 12 }}
                     onClick={handlefeedback}
                 >
-                    Add Feedback
+                    {feedbackIsShown ? 'Submit' : 'Add Feedback'}
                 </Button>
                 <Button
-                    fullWidth
                     variant="contained"
                     color="primary"
                     size="small"
@@ -193,12 +198,12 @@ const IdeaSummaryScreenWithAccordion = () => {
                         const secIdentifier = fetchAgenstsData[sec];
                         return (
                             <Grid item xs={12} key={idx}>
-                                <Accordion expanded={idx === activeIndex} onChange={() => setActiveIndex(idx)}>
+                                <Accordion onChange={() => setActiveIndex(idx)}>
                                     <AccordionSummary expandIcon={<ExpandMore />}>
                                         <Box display="flex" alignItems="center">
                                             {sec?.icon}
                                             <Typography variant="h6" ml={1}>
-                                                {sec.split('.')[0].toUpperCase()}
+                                                {sec.replace('_agent.json', '').replace(/_/g, ' ').toUpperCase()}
                                             </Typography>
                                         </Box>
                                     </AccordionSummary>
@@ -207,38 +212,36 @@ const IdeaSummaryScreenWithAccordion = () => {
                                             <Box key={sectionKey} mt={3}>
                                                 <Box component="ul" sx={{ pl: 2 }}>
                                                     {items.map((item, i) => (
-                                                        <li key={i} style={{ marginBottom: '8px' }}>
-                                                            <Card
-                                                                sx={{
-                                                                    margin: 2,
-                                                                    padding: 1,
-                                                                    background: "linear-gradient(to right, #e3f2fd, #bbdefb)",
-                                                                    borderRadius: 3,
-                                                                    boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
-                                                                    transition: "transform 0.2s, box-shadow 0.2s",
-                                                                    '&:hover': {
-                                                                        transform: "translateY(-5px)",
-                                                                        boxShadow: "0 6px 25px rgba(0, 0, 0, 0.15)"
-                                                                    }
-                                                                }}>
-                                                                <CardContent>
-                                                                    <Typography variant="body1" fontWeight="bold">
-                                                                        {item.name || item.benefit || item.advantage || item.issue || item.revenue_stream || item.segment_name || item.impact || item.solution || item.strategic_positions}
-                                                                    </Typography>
-                                                                    {item.description && (
-                                                                        <Typography variant="body2">{item.description}</Typography>
-                                                                    )}
-                                                                </CardContent>
-                                                                <CardActions sx={{ justifyContent: "flex-end" }}>
-                                                                    <Button size="small" variant="outlined" onClick={() => dispatch(setIsEditModalOpen({ name: item.name || item.benefit || item.advantage || item.issue || item.revenue_stream || item.segment_name || item.impact || item.solution || item.strategic_positions, des: item?.description, id: item?.id, agentName: sec.split('.')[0].toUpperCase() }))}>
-                                                                        Edit
-                                                                    </Button>
-                                                                    <Button size='small' variant="outlined" color="error" onClick={() => handleDelete(item.id, sec.split('.')[0].toUpperCase())}>
-                                                                        Delete
-                                                                    </Button>
-                                                                </CardActions>
-                                                            </Card>
-                                                        </li>
+                                                        <Card
+                                                            sx={{
+                                                                margin: 2,
+                                                                padding: 1,
+                                                                borderRadius: 3,
+                                                                boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
+                                                                transition: "transform 0.2s, box-shadow 0.2s",
+                                                                '&:hover': {
+                                                                    transform: "translateY(-5px)",
+                                                                    boxShadow: "0 6px 25px rgba(0, 0, 0, 0.15)"
+                                                                }
+                                                            }}>
+                                                            <CardContent>
+                                                                <Typography variant="body1" fontWeight="bold">
+                                                                    {item.name || item.benefit || item.advantage || item.issue || item.revenue_stream || item.segment_name || item.impact || item.solution || item.strategic_positions}
+                                                                </Typography>
+                                                                {item.description && (
+                                                                    <Typography variant="body2">{item.description}</Typography>
+                                                                )}
+                                                            </CardContent>
+                                                            <CardActions sx={{ justifyContent: "flex-end" }}>
+                                                                <Button size="small" variant="outlined" onClick={() => dispatch(setIsEditModalOpen({ name: item.name || item.benefit || item.advantage || item.issue || item.revenue_stream || item.segment_name || item.impact || item.solution || item.strategic_positions, des: item?.description, id: item?.id, agentName: sec.split('.')[0].toUpperCase() }))}>
+                                                                    Edit
+                                                                </Button>
+                                                                <Button size='small' variant="outlined" color="error" onClick={() => handleDelete(item.id, sec.split('.')[0].toUpperCase())}>
+                                                                    Delete
+                                                                </Button>
+                                                            </CardActions>
+                                                        </Card>
+
                                                     ))}
                                                 </Box>
                                             </Box>
