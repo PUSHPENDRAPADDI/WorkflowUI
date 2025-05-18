@@ -210,11 +210,22 @@ const IdeaSummaryScreenWithAccordion = () => {
                                     <AccordionDetails>
                                         {Object.entries(secIdentifier || {}).map(([sectionKey, items]) => (
                                             <Box key={sectionKey} mt={3}>
-                                                <Box component="ul" sx={{ pl: 2 }}>
+                                                <Box component="ul" sx={{
+                                                    display: 'flex',
+                                                    flexWrap: 'wrap',
+                                                    gap: 2,
+                                                    pl: 0,
+                                                    listStyle: 'none',
+                                                }}>
                                                     {items.map((item, i) => (
                                                         <Card
+                                                            key={i}
                                                             sx={{
-                                                                margin: 2,
+                                                                width: {
+                                                                    xs: '100%', 
+                                                                    sm: '48%',  
+                                                                    md: '30%',
+                                                                },
                                                                 padding: 1,
                                                                 borderRadius: 3,
                                                                 boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",

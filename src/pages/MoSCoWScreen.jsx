@@ -37,16 +37,26 @@ const MoSCoWScreen = ({ currentIdeaName }) => {
     const [deleteDetails, setDeleteDetails] = useState(null);
     const formDataFromReducer = useSelector((state) => state.homeScreenReducer.featureEditDetails);
     const { data: fetchedFeaturesData, loading: featuresLoading, error: FeaturesError, fetchData: fetchFeatures } = useApi("Features", `${URLCONSTANTS.GET_PARTICULAR_AGENT_RESPONSE + currentIdeaName}/features_list_agent`, "GET");
+    const { data: moveFeaturesData, loading: moveFeaturesLoading, error: moveFeaturesError, fetchData: moveFeaturesFun } = useApi("MoveFeature", `${URLCONSTANTS.UPDATE_FEATURE_PRIORITY}`, "POST");
+
     const [anchorEl, setAnchorEl] = useState(null);
     const openOption = Boolean(anchorEl);
 
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
-        console.log(activeTab);
-
     };
 
-    const handleClose = () => {
+    const getKeyByValue = (obj, value) => {
+        return Object.keys(obj).find(key => obj[key] === value);
+    };
+
+    const handleClose = (item, feature) => {
+        const key = getKeyByValue(tabLabels, item);
+        moveFeaturesFun({
+            concept_name: currentIdeaName,
+            feature_id: feature?.id,
+            new_priority: key
+        })
         setAnchorEl(null);
     };
 
@@ -79,7 +89,7 @@ const MoSCoWScreen = ({ currentIdeaName }) => {
 
     useEffect(() => {
         fetchFeatures();
-    }, [updatedFeature, deleteFeature]);
+    }, [updatedFeature, deleteFeature, moveFeaturesData]);
 
     const handleFeatureDelete = (item) => {
         setOpen(true);
@@ -222,7 +232,7 @@ const MoSCoWScreen = ({ currentIdeaName }) => {
                                     >
                                         {filteredOptionsValues.map((item, index) => {
                                             return (
-                                                <MenuItem key={index} onClick={handleClose}>{item}</MenuItem>
+                                                <MenuItem key={index} onClick={() => handleClose(item, feature)}>{item}</MenuItem>
                                             )
                                         })}
                                     </Menu>

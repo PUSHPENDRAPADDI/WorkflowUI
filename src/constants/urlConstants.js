@@ -12,7 +12,8 @@ const URLCONSTANTS = {
     PROCEED_TO_NEXT_AGENT: `${BASEURL}proceed_to_next_agent`,
     GET_PARTICULAR_AGENT_RESPONSE: `${BASEURL}get_output/`,
     ADD_FEEDBACK: `${BASEURL}add_feedback`,
-    PUBLISHJIRA: `${BASEURL}publish_to_jira/`
+    PUBLISHJIRA: `${BASEURL}publish_to_jira/`,
+    UPDATE_FEATURE_PRIORITY: `${BASEURL}update_feature_priority`
 }
 
 export { URLCONSTANTS };
