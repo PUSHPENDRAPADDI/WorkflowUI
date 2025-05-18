@@ -35,6 +35,7 @@ const MoSCoWScreen = ({ currentIdeaName }) => {
     const [activeTab, setActiveTab] = useState('MUST_HAVE');
     const [open, setOpen] = useState(false);
     const [deleteDetails, setDeleteDetails] = useState(null);
+    const [movefeature, setMoveFeature] = useState({});
     const formDataFromReducer = useSelector((state) => state.homeScreenReducer.featureEditDetails);
     const { data: fetchedFeaturesData, loading: featuresLoading, error: FeaturesError, fetchData: fetchFeatures } = useApi("Features", `${URLCONSTANTS.GET_PARTICULAR_AGENT_RESPONSE + currentIdeaName}/features_list_agent`, "GET");
     const { data: moveFeaturesData, loading: moveFeaturesLoading, error: moveFeaturesError, fetchData: moveFeaturesFun } = useApi("MoveFeature", `${URLCONSTANTS.UPDATE_FEATURE_PRIORITY}`, "POST");
@@ -42,7 +43,8 @@ const MoSCoWScreen = ({ currentIdeaName }) => {
     const [anchorEl, setAnchorEl] = useState(null);
     const openOption = Boolean(anchorEl);
 
-    const handleClick = (event) => {
+    const handleClick = (event, feat) => {
+        setMoveFeature(feat)
         setAnchorEl(event.currentTarget);
     };
 
@@ -50,11 +52,11 @@ const MoSCoWScreen = ({ currentIdeaName }) => {
         return Object.keys(obj).find(key => obj[key] === value);
     };
 
-    const handleClose = (item, feature) => {
+    const handleClose = (item) => {
         const key = getKeyByValue(tabLabels, item);
         moveFeaturesFun({
             concept_name: currentIdeaName,
-            feature_id: feature?.id,
+            feature_id: movefeature?.id,
             new_priority: key
         })
         setAnchorEl(null);
@@ -214,7 +216,7 @@ const MoSCoWScreen = ({ currentIdeaName }) => {
                                             },
                                         }}
                                         size="small"
-                                        onClick={handleClick}>
+                                        onClick={(e) => handleClick(e, feature)}>
                                         <MoreVertIcon fontSize="small" />
                                     </IconButton>
                                     <Menu
@@ -232,7 +234,7 @@ const MoSCoWScreen = ({ currentIdeaName }) => {
                                     >
                                         {filteredOptionsValues.map((item, index) => {
                                             return (
-                                                <MenuItem key={index} onClick={() => handleClose(item, feature)}>{item}</MenuItem>
+                                                <MenuItem key={index} onClick={() => handleClose(item)}>{item}</MenuItem>
                                             )
                                         })}
                                     </Menu>
