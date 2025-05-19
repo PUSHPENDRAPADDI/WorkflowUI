@@ -23,6 +23,8 @@ import FeatureEditModal from '../components/FeatureEditModal';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import AddIcon from '@mui/icons-material/Add';
+
 
 const tabLabels = {
     MUST_HAVE: 'Must Have 🔥',
@@ -110,8 +112,8 @@ const MoSCoWScreen = ({ currentIdeaName }) => {
                 <CircularProgress color="primary" />
             </Box >
         ) :
-            <Box p={2}>
-                <Box p={2}>
+            <Box >
+                <Box >
                     <Tabs
                         value={activeTab}
                         onChange={handleTabChange}
@@ -154,7 +156,19 @@ const MoSCoWScreen = ({ currentIdeaName }) => {
                         mb: 1,
                     }}
                 >
-                    <Button size="small" variant="outlined">Add Feature</Button>
+                    <IconButton
+                        sx={{
+                            backgroundColor: 'white',
+                            boxShadow: 1,
+                            '&:hover': {
+                                backgroundColor: '#f5f5f5',
+                            },
+                        }}
+                        size="small"
+                        color='primary'
+                    >
+                        <AddIcon fontSize='large' />
+                    </IconButton>
                 </Box>
                 <Box mt={3}>
                     <Grid container spacing={2}>
@@ -172,7 +186,7 @@ const MoSCoWScreen = ({ currentIdeaName }) => {
                                     }}
                                 >
                                     <CardContent sx={{ flexGrow: 1 }}>
-                                        <Typography variant="h6" gutterBottom>
+                                        <Typography variant="h6" color='primary' gutterBottom>
                                             {feature.title}
                                         </Typography>
                                         <Typography variant="body2" color="textSecondary">

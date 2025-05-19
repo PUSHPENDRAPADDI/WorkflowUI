@@ -62,7 +62,7 @@ function EpicTabs({ currentIdeaName }) {
                                 variant="outlined"
                                 sx={{
                                     width: '32%',
-                                    height: '450px',
+                                    height: '350px',
                                     padding: 1,
                                     borderRadius: 3,
                                     boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
@@ -80,8 +80,8 @@ function EpicTabs({ currentIdeaName }) {
                                 }}
                             >
                                 <CardContent>
-                                    <Typography variant="h6">{epic.epic_title}</Typography>
-                                    <Typography variant="body2" sx={{ mt: 1 }}>
+                                    <Typography variant="h6" color='primary'>{epic.epic_title}</Typography>
+                                    <Typography variant="body2" color="textSecondary">
                                         {epic.description}
                                     </Typography>
                                 </CardContent>

@@ -29,6 +29,7 @@ import PersonaCards from './PersonaCard';
 import MoSCoWScreen from './MoSCoWScreen'
 import EpicTabs from './EpicTabs';
 import EditIcon from '@mui/icons-material/Edit';
+import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import FeedbackModal from '../components/FeedbackModal';
 
@@ -203,7 +204,7 @@ const IdeaSummaryScreenWithAccordion = () => {
                                         <AccordionSummary expandIcon={<ExpandMore />}>
                                             <Box display="flex" alignItems="center">
                                                 {sec?.icon}
-                                                <Typography variant="h6" ml={1}>
+                                                <Typography variant="h6" ml={1} >
                                                     {sec.replace('_agent.json', '').replace(/_/g, ' ').toUpperCase()}
                                                 </Typography>
                                             </Box>
@@ -219,9 +220,19 @@ const IdeaSummaryScreenWithAccordion = () => {
                                                             mb: 1,
                                                         }}
                                                     >
-                                                        <Button size="small" variant="outlined">
-                                                            Add
-                                                        </Button>
+                                                        <IconButton
+                                                            sx={{
+                                                                backgroundColor: 'white',
+                                                                boxShadow: 1,
+                                                                '&:hover': {
+                                                                    backgroundColor: '#f5f5f5',
+                                                                },
+                                                            }}
+                                                            size="small"
+                                                            color='primary'
+                                                        >
+                                                            <AddIcon fontSize='large'/>
+                                                        </IconButton>
                                                     </Box>
                                                     <Box component="ul" sx={{
                                                         display: 'flex',
@@ -244,11 +255,11 @@ const IdeaSummaryScreenWithAccordion = () => {
                                                                     boxShadow: 6,
                                                                 }}>
                                                                 <CardContent>
-                                                                    <Typography variant="body1" fontWeight="bold">
+                                                                    <Typography variant="body1" fontWeight="bold" color='primary'>
                                                                         {item.name || item.benefit || item.advantage || item.issue || item.revenue_stream || item.segment_name || item.impact || item.solution || item.strategic_positions}
                                                                     </Typography>
                                                                     {item.description && (
-                                                                        <Typography variant="body2">{item.description}</Typography>
+                                                                        <Typography variant="body2"color="textSecondary">{item.description}</Typography>
                                                                     )}
                                                                 </CardContent>
                                                                 <CardActions sx={{ justifyContent: "flex-end" }}>

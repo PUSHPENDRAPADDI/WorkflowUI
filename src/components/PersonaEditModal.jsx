@@ -66,14 +66,6 @@ const PersonaEditModal = ({ handleEdit }) => {
         <TextField
           autoFocus
           fullWidth
-          label="Name"
-          value={formData.name}
-          onChange={(e) => handleChange('name', e.target.value)}
-          sx={{ mt: 2 }}
-        />
-        <TextField
-          autoFocus
-          fullWidth
           label="Role"
           value={formData.role}
           onChange={(e) => handleChange('role', e.target.value)}

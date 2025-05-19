@@ -3,8 +3,7 @@ import {
     Tabs, Tab, Box, Typography, Avatar, Card, CardContent, Accordion, AccordionSummary,
     AccordionDetails, Divider, useTheme,
     CircularProgress,
-    IconButton,
-    Button
+    IconButton
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import EditIcon from '@mui/icons-material/Edit';
@@ -15,8 +14,18 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setPersonaEditModalOpen } from '../redux/silces/HomeScreenSlice';
 import PersonaEditModal from '../components/PersonaEditModal';
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
+import AddIcon from '@mui/icons-material/Add';
+const users = [
+    'Ash', 'Misty', 'Brock', 'Serena',
+    'Naruto', 'Sasuke', 'Sakura', 'Kakashi',
+    'Luffy', 'Zoro', 'Nami', 'Sanji',
+    'Goku', 'Vegeta', 'Gohan', 'Trunks',
+    'Itachi', 'Hinata', 'Gaara', 'Ino',
+    'Eren', 'Mikasa', 'Armin', 'Levi',
+    'Tanjiro', 'Nezuko', 'Inosuke', 'Zenitsu'
+];
 
-function PersonaCard({ user, handleDeletePersona, deleteDetails, setDeleteDetails }) {
+function PersonaCard({ user, handleDeletePersona, deleteDetails, setDeleteDetails, idx }) {
     const theme = useTheme();
     const dispatch = useDispatch();
     const [open, setOpen] = useState(false);
@@ -77,6 +86,7 @@ function PersonaCard({ user, handleDeletePersona, deleteDetails, setDeleteDetail
                 <Box display="flex" alignItems="center" gap={2} mb={2}>
                     <Avatar
                         alt={user?.role}
+                        src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${users[idx]}`}
                         sx={{ width: 64, height: 64, border: `2px solid ${theme.palette.primary.main}` }}
                     />
                     <Box>
@@ -188,7 +198,9 @@ export default function PersonaCards({ currentIdeaName }) {
                     <Tab
                         key={idx}
                         label={user?.role}
-                        icon={<Avatar />}
+                        icon={<Avatar
+                            src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${users[idx]}`}
+                        />}
                         iconPosition="start"
                     />
                 ))}
@@ -202,7 +214,19 @@ export default function PersonaCards({ currentIdeaName }) {
                     mb: 1,
                 }}
             >
-                <Button size="small" variant="outlined">Add Persona</Button>
+                <IconButton
+                    sx={{
+                        backgroundColor: 'white',
+                        boxShadow: 1,
+                        '&:hover': {
+                            backgroundColor: '#f5f5f5',
+                        },
+                    }}
+                    size="small"
+                    color='primary'
+                >
+                    <AddIcon fontSize='large' />
+                </IconButton>
             </Box>
             {PERSONALoading ? (
                 <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }} >
@@ -213,7 +237,7 @@ export default function PersonaCards({ currentIdeaName }) {
                     bgcolor: 'white',
 
                 }}>
-                    {userInfo && userInfo?.length > 0 && <PersonaCard user={userInfo[activeTab]} handleDeletePersona={handleDeletePersona} deleteDetails={deleteDetails} setDeleteDetails={setDeleteDetails} />}
+                    {userInfo && userInfo?.length > 0 && <PersonaCard user={userInfo[activeTab]} handleDeletePersona={handleDeletePersona} deleteDetails={deleteDetails} setDeleteDetails={setDeleteDetails} idx={activeTab} />}
                 </Box>}
             <PersonaEditModal handleEdit={handleEditPersona} />
         </Box>
