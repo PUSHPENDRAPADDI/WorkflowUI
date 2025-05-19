@@ -11,20 +11,18 @@ import {
     CircularProgress,
     IconButton,
     Menu,
-    MenuItem,
-    Button
+    MenuItem
 } from '@mui/material';
 import useApi from '../hooks/useApi';
 import { URLCONSTANTS } from '../constants/urlConstants';
-import EditIcon from '@mui/icons-material/Edit';
 import { useDispatch, useSelector } from 'react-redux';
 import { setFeatureEditModalOpen } from '../redux/silces/HomeScreenSlice';
 import FeatureEditModal from '../components/FeatureEditModal';
-import DeleteIcon from '@mui/icons-material/Delete';
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
-
 
 const tabLabels = {
     MUST_HAVE: 'Must Have 🔥',

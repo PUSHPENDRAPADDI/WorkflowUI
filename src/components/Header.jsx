@@ -2,15 +2,16 @@ import React from 'react';
 import {
   AppBar,
   Toolbar,
-  Typography,
-  IconButton,
   Menu,
   MenuItem,
-  Avatar,
   Box,
   useTheme,
+  Typography,
+  IconButton,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import logo from '../assets/picture.png'
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 
 const Header = () => {
   const navigate = useNavigate();
@@ -39,23 +40,23 @@ const Header = () => {
 
   return (
     <AppBar
-      position="static"
+      position="sticky"
       elevation={0}
       sx={{
-        bgcolor: theme.palette.background.paper,
+        bgcolor: "#eeeeee",
         color: theme.palette.text.primary,
         borderBottom: `1px solid ${theme.palette.divider}`,
+        zIndex: theme.zIndex.drawer + 1,
       }}
     >
       <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
-        <Typography variant="h6" fontWeight="bold" noWrap>
-          CitiusTech
-        </Typography>
-        <Box display="flex" alignItems="center" gap={2}>
-          <IconButton onClick={handleMenuOpen} color="inherit">
-            <Avatar sx={{ bgcolor: theme.palette.primary.main, width: 34, height: 34 }}>
-              JW
-            </Avatar>
+        <img alt='logo' src={logo} width='150px' />
+        <Box display="flex" alignItems="center" gap={1}>
+          <Typography variant="subtitle1" onClick={handleMenuOpen} color="textPrimary">
+            John Wick
+          </Typography>
+          <IconButton onClick={handleMenuOpen} color="inherit" sx={{ p: 0 }}>
+            <ArrowDropDownIcon />
           </IconButton>
           <Menu
             anchorEl={anchorEl}
@@ -71,6 +72,7 @@ const Header = () => {
         </Box>
       </Toolbar>
     </AppBar>
+
   );
 };
 

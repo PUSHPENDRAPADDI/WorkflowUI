@@ -48,8 +48,9 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
       open={isOpen}
       PaperProps={{
         sx: {
-          top: '68px',
+          top: '65px',
           height: 'calc(100% - 68px)',
+          backgroundColor:'#eeeeee'
         },
       }}
     >
