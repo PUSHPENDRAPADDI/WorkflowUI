@@ -38,6 +38,7 @@ function EpicTabs({ currentIdeaName }) {
     useEffect(() => {
         fetchEPICS()
     }, []);
+    console.log(epicsData, 'This ');
 
     return (
         <Container maxWidth="lg" sx={{ mt: 1 }}>
@@ -47,46 +48,45 @@ function EpicTabs({ currentIdeaName }) {
                 </Box>
             ) : (
                 <>
-                    <Tabs
-                        value={selectedTab}
-                        onChange={handleChange}
-                        indicatorColor="primary"
-                        textColor="primary"
-                        variant="scrollable"
-                        scrollButtons="auto"
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            flexWrap: 'wrap',
+                            gap: 2,
+                            justifyContent: 'flex-start',
+                        }}
                     >
-                        {epicsData?.map((epic) => (
-                            <Tab key={epic.id} label={epic.epic_title} />
+                        {epicsData?.map((epic, index) => (
+                            <Card
+                                key={index}
+                                variant="outlined"
+                                sx={{
+                                    width: '32%',
+                                    height: '450px',
+                                    padding: 1,
+                                    borderRadius: 3,
+                                    boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
+                                    transition: "transform 0.2s, box-shadow 0.2s",
+                                    '&:hover': {
+                                        transform: "translateY(-5px)",
+                                        boxShadow: "0 6px 25px rgba(0, 0, 0, 0.15)"
+                                    },
+                                    '@media (max-width: 900px)': {
+                                        width: '48%',
+                                    },
+                                    '@media (max-width: 600px)': {
+                                        width: '100%',
+                                    },
+                                }}
+                            >
+                                <CardContent>
+                                    <Typography variant="h6">{epic.epic_title}</Typography>
+                                    <Typography variant="body2" sx={{ mt: 1 }}>
+                                        {epic.description}
+                                    </Typography>
+                                </CardContent>
+                            </Card>
                         ))}
-                    </Tabs>
-                    <Box>
-                        <Typography variant="subtitle2" sx={{ mt: 2, fontWeight: 'bold' }}>
-                            Linked Agents:
-                        </Typography>
-                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 1 }}>
-                            {epicsData && epicsData[selectedTab]?.linked_agents.map((agent, idx) => (
-                                <Chip key={idx} label={agent.replace(/_/g, ' ')} color="primary" variant="outlined" />
-                            ))}
-                        </Box>
-                        <Box sx={{ mt: 4 }}>
-                            <Typography variant="h5" gutterBottom>
-                                User Stories
-                            </Typography>
-                            <Grid container spacing={2}>
-                                {epicsData && epicsData[selectedTab]?.user_stories.map((story) => (
-                                    <Grid item xs={12} sm={6} md={4} key={story.id}>
-                                        <Card variant="outlined" sx={{ height: '100%' }}>
-                                            <CardContent>
-                                                <Typography variant="h6">{story.title}</Typography>
-                                                <Typography variant="body2" sx={{ mt: 1 }}>
-                                                    {story.description}
-                                                </Typography>
-                                            </CardContent>
-                                        </Card>
-                                    </Grid>
-                                ))}
-                            </Grid>
-                        </Box>
                     </Box>
                     <Button
                         variant="contained"

@@ -8,8 +8,9 @@ const initialState = {
     homeScreenLoader: false,
     personaEditModalOpen: false,
     personaEditDetails: {},
-    featureEditModalOpen:false,
-    featureEditDetails:{}
+    featureEditModalOpen: false,
+    featureEditDetails: {},
+    isFeedbackOpen: false
 };
 
 const homeScreenSlice = createSlice({
@@ -40,10 +41,13 @@ const homeScreenSlice = createSlice({
             state.personaEditModalOpen = !state.personaEditModalOpen;
             state.personaEditDetails = actions.payload;
         },
-         setFeatureEditModalOpen: (state, actions) => {
+        setFeatureEditModalOpen: (state, actions) => {
             state.featureEditModalOpen = !state.featureEditModalOpen;
             state.featureEditDetails = actions.payload;
-        }, 
+        },
+        setIsFeedbackOpen: (state, actions) => {
+            state.isFeedbackOpen = !state.isFeedbackOpen
+        }
     },
 });
 
@@ -54,7 +58,8 @@ export const {
     setIdeaName,
     setHomeScreenLoader,
     setPersonaEditModalOpen,
-    setFeatureEditModalOpen
+    setFeatureEditModalOpen,
+    setIsFeedbackOpen
 } = homeScreenSlice.actions;
 export default homeScreenSlice.reducer;
 

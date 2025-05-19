@@ -10,7 +10,7 @@ import { URLCONSTANTS } from '../constants/urlConstants';
 
 const IdeaModal = () => {
     const dispatch = useDispatch();
-    const { data: setIdeaData, loading: setIdeaLoading, error: setIdeaError, fetchData: fetchsetIdea } = useApi("SET_IDEAS", `http://localhost:8000/add_concept`, "POST");
+    const { data: setIdeaData, loading: setIdeaLoading, error: setIdeaError, fetchData: fetchsetIdea } = useApi("SET_IDEAS", `${URLCONSTANTS.SET_IDEAS}`, "POST");
     const { data: fetchedConcept, loading: conceptLoading, error: conceptError, fetchData: fetchConcept } = useApi("GET_CONCEPTS", `${URLCONSTANTS.GET_CONCEPTS}`, "GET");
 
     const open = useSelector((state) => state.homeScreenReducer.isCreateIdeaModalOpen);

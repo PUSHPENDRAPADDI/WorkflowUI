@@ -11,7 +11,8 @@ import {
     CircularProgress,
     IconButton,
     Menu,
-    MenuItem
+    MenuItem,
+    Button
 } from '@mui/material';
 import useApi from '../hooks/useApi';
 import { URLCONSTANTS } from '../constants/urlConstants';
@@ -144,6 +145,17 @@ const MoSCoWScreen = ({ currentIdeaName }) => {
                         ))}
                     </Tabs>
                 </Box>
+                <Box
+                    sx={{
+                        display: 'flex',
+                        justifyContent: 'end',
+                        alignItems: 'center',
+                        mt: 2,
+                        mb: 1,
+                    }}
+                >
+                    <Button size="small" variant="outlined">Add Feature</Button>
+                </Box>
                 <Box mt={3}>
                     <Grid container spacing={2}>
                         {featureData && featureData[activeTab]?.map((feature, idx) => (
@@ -155,7 +167,8 @@ const MoSCoWScreen = ({ currentIdeaName }) => {
                                         display: 'flex',
                                         flexDirection: 'column',
                                         justifyContent: 'space-between',
-                                        position: 'relative'
+                                        position: 'relative',
+                                        boxShadow: 6,
                                     }}
                                 >
                                     <CardContent sx={{ flexGrow: 1 }}>
@@ -175,7 +188,7 @@ const MoSCoWScreen = ({ currentIdeaName }) => {
                                         onClick={() => handleFeatureEdit(feature)}
                                         sx={{
                                             position: 'absolute',
-                                            top: 12,
+                                            bottom: 12,
                                             right: 85,
                                             backgroundColor: 'white',
                                             boxShadow: 1,
@@ -191,7 +204,7 @@ const MoSCoWScreen = ({ currentIdeaName }) => {
                                         onClick={() => handleFeatureDelete(feature)}
                                         sx={{
                                             position: 'absolute',
-                                            top: 12,
+                                            bottom: 12,
                                             right: 45,
                                             backgroundColor: 'white',
                                             boxShadow: 1,
@@ -207,7 +220,7 @@ const MoSCoWScreen = ({ currentIdeaName }) => {
                                     <IconButton
                                         sx={{
                                             position: 'absolute',
-                                            top: 12,
+                                            bottom: 12,
                                             right: 5,
                                             backgroundColor: 'white',
                                             boxShadow: 1,

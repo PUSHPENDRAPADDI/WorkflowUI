@@ -1,6 +1,6 @@
 const BASEURL = "http://localhost:8000/";
 const URLCONSTANTS = {
-    SET_IDEAS: `${BASEURL}understanding/set-idea`,
+    SET_IDEAS: `${BASEURL}add_concept`,
     UNDERSTANDING: `${BASEURL}understanding`,
     PERSONA: `${BASEURL}understanding/persona`,
     FEATURES: `${BASEURL}understanding/features`,
@@ -13,7 +13,8 @@ const URLCONSTANTS = {
     GET_PARTICULAR_AGENT_RESPONSE: `${BASEURL}get_output/`,
     ADD_FEEDBACK: `${BASEURL}add_feedback`,
     PUBLISHJIRA: `${BASEURL}publish_to_jira/`,
-    UPDATE_FEATURE_PRIORITY: `${BASEURL}update_feature_priority`
+    UPDATE_FEATURE_PRIORITY: `${BASEURL}update_feature_priority`,
+
 }
 
 export { URLCONSTANTS };

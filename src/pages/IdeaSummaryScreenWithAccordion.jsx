@@ -14,6 +14,7 @@ import {
     Card,
     CardActions,
     TextField,
+    IconButton,
 } from '@mui/material';
 import {
     ExpandMore
@@ -22,11 +23,14 @@ import useApi from '../hooks/useApi';
 import { URLCONSTANTS } from '../constants/urlConstants';
 import EditModal from '../components/EditModal';
 import { useDispatch, useSelector } from 'react-redux';
-import { setIsEditModalOpen } from '../redux/silces/HomeScreenSlice';
+import { setIsEditModalOpen, setIsFeedbackOpen } from '../redux/silces/HomeScreenSlice';
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 import PersonaCards from './PersonaCard';
 import MoSCoWScreen from './MoSCoWScreen'
 import EpicTabs from './EpicTabs';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import FeedbackModal from '../components/FeedbackModal';
 
 const sidebarSteps = [
     'Understanding',
@@ -36,20 +40,10 @@ const sidebarSteps = [
 ];
 
 const SidebarTabs = ({ currentStep = 0, setCurrentStep, currentIdeaName, agentName, handleProceedToNext }) => {
-    const [feedback, setFeedback] = useState('');
-    const [feedbackIsShown, setFeedbackIsShown] = useState(false);
-    const { data: addFeedbackResponse, loading: addFeedbackLoading, error: addFeedbackError, fetchData: addFeedbackFunction } = useApi("addFeedback", `${URLCONSTANTS.ADD_FEEDBACK}`, "POST");
+    const dispatch = useDispatch();
 
     const handlefeedback = () => {
-        if (feedbackIsShown) {
-            addFeedbackFunction({
-                concept_name: currentIdeaName,
-                feedback
-            })
-            setFeedbackIsShown(false)
-        } else {
-            setFeedbackIsShown(true)
-        }
+        dispatch(setIsFeedbackOpen());
     }
 
     const handleTabChange = (event, newValue) => {
@@ -64,78 +58,83 @@ const SidebarTabs = ({ currentStep = 0, setCurrentStep, currentIdeaName, agentNa
                 color: '#333',
                 borderRadius: 2,
                 boxShadow: 2,
-                marginBottom: "15px"
+                marginBottom: '15px',
             }}
         >
-            <Tabs
-                value={currentStep}
-                onChange={handleTabChange}
-                variant="scrollable"
-                scrollButtons="auto"
+            <Box
                 sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    flexWrap: 'wrap',
+                    gap: 2,
                     mb: 1,
-                    '& .MuiTab-root': {
-                        fontSize: 13,
-                        textTransform: 'none',
-                        minHeight: 36,
-                        px: 2,
-                        py: 1,
-                        borderRadius: 1,
-                        color: '#333',
-                        backgroundColor: '#fff',
-                        transition: 'all 0.2s ease-in-out',
-                        mr: 1,
-                    },
-                    '& .Mui-selected': {
-                        bgcolor: '#90caf9',
-                        color: '#0d47a1',
-                    },
-                    '& .MuiTab-root:hover': {
-                        backgroundColor: '#f0f0f0',
-                    },
-                    '& .Mui-selected:hover': {
-                        backgroundColor: '#64b5f6',
-                    },
                 }}
             >
-                {sidebarSteps.map((step, index) => (
-                    <Tab key={step} label={step} value={index} />
-                ))}
-            </Tabs>
-            <Divider sx={{ my: 1 }} />
-            {(feedbackIsShown && currentStep !== 3) && <TextField
-                fullWidth
-                name="description"
-                label="Describe your feedback"
-                placeholder="Highlight key features, their importance, benefits, and end goal."
-                margin="dense"
-                value={feedback}
-                onChange={(e) => setFeedback(e.target.value)}
-            />}
-            {currentStep !== 3 && <Box sx={{
-                display: 'flex',
-                justifyContent: 'center',
-                gap: 2,
-            }}>
-                <Button
-                    variant="contained"
-                    color="primary"
-                    size="small"
-                    sx={{ fontSize: 12 }}
-                    onClick={handlefeedback}
+                <Tabs
+                    value={currentStep}
+                    onChange={handleTabChange}
+                    variant="scrollable"
+                    scrollButtons="auto"
+                    sx={{
+                        '& .MuiTab-root': {
+                            fontSize: 13,
+                            textTransform: 'none',
+                            minHeight: 36,
+                            px: 2,
+                            py: 1,
+                            borderRadius: 1,
+                            color: '#333',
+                            backgroundColor: '#fff',
+                            transition: 'all 0.2s ease-in-out',
+                            mr: 1,
+                        },
+                        '& .Mui-selected': {
+                            bgcolor: '#90caf9',
+                            color: '#0d47a1',
+                        },
+                        '& .MuiTab-root:hover': {
+                            backgroundColor: '#f0f0f0',
+                        },
+                        '& .Mui-selected:hover': {
+                            backgroundColor: '#64b5f6',
+                        },
+                    }}
                 >
-                    {feedbackIsShown ? 'Submit' : 'Add Feedback'}
-                </Button>
-                <Button
-                    variant="contained"
-                    color="primary"
-                    size="small"
-                    sx={{ fontSize: 12 }}
-                    onClick={handleProceedToNext}
-                >
-                    Generate {sidebarSteps[currentStep + 1]}
-                </Button>
-            </Box>}
+                    {sidebarSteps.map((step, index) => (
+                        <Tab key={step} label={step} value={index} />
+                    ))}
+                </Tabs>
+                {currentStep !== 3 && (
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            gap: 1,
+                            flexShrink: 0,
+                        }}
+                    >
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            size="small"
+                            sx={{ fontSize: 12 }}
+                            onClick={handlefeedback}
+                        >
+                            Add Feedback
+                        </Button>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            size="small"
+                            sx={{ fontSize: 12 }}
+                            onClick={handleProceedToNext}
+                        >
+                            Generate {sidebarSteps[currentStep + 1]}
+                        </Button>
+                    </Box>
+                )}
+            </Box>
+            <FeedbackModal />
         </Box>
     );
 };
@@ -185,101 +184,134 @@ const IdeaSummaryScreenWithAccordion = () => {
     }
 
     return (
-        <Box sx={{ display: 'flex', padding: '0', gap: 2 }}>
-            <Box sx={{ flexGrow: 1 }}>
-                <SidebarTabs
-                    currentStep={currentStep}
-                    setCurrentStep={setCurrentStep}
-                    currentIdeaName={currentIdeaName}
-                    handleProceedToNext={proceedNext}
-                    agentName={fetchAgenstsData && Object.keys(fetchAgenstsData)} />
-                {currentStep === 0 ? <Grid container spacing={2}>
-                    {fetchAgenstsData && Object.keys(fetchAgenstsData).map((sec, idx) => {
-                        const secIdentifier = fetchAgenstsData[sec];
-                        return (
-                            <Grid item xs={12} key={idx}>
-                                <Accordion onChange={() => setActiveIndex(idx)}>
-                                    <AccordionSummary expandIcon={<ExpandMore />}>
-                                        <Box display="flex" alignItems="center">
-                                            {sec?.icon}
-                                            <Typography variant="h6" ml={1}>
-                                                {sec.replace('_agent.json', '').replace(/_/g, ' ').toUpperCase()}
-                                            </Typography>
-                                        </Box>
-                                    </AccordionSummary>
-                                    <AccordionDetails>
-                                        {Object.entries(secIdentifier || {}).map(([sectionKey, items]) => (
-                                            <Box key={sectionKey} mt={3}>
-                                                <Box component="ul" sx={{
-                                                    display: 'flex',
-                                                    flexWrap: 'wrap',
-                                                    gap: 2,
-                                                    pl: 0,
-                                                    listStyle: 'none',
-                                                }}>
-                                                    {items.map((item, i) => (
-                                                        <Card
-                                                            key={i}
-                                                            sx={{
-                                                                width: {
-                                                                    xs: '100%', 
-                                                                    sm: '48%',  
-                                                                    md: '30%',
-                                                                },
-                                                                padding: 1,
-                                                                borderRadius: 3,
-                                                                boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
-                                                                transition: "transform 0.2s, box-shadow 0.2s",
-                                                                '&:hover': {
-                                                                    transform: "translateY(-5px)",
-                                                                    boxShadow: "0 6px 25px rgba(0, 0, 0, 0.15)"
-                                                                }
-                                                            }}>
-                                                            <CardContent>
-                                                                <Typography variant="body1" fontWeight="bold">
-                                                                    {item.name || item.benefit || item.advantage || item.issue || item.revenue_stream || item.segment_name || item.impact || item.solution || item.strategic_positions}
-                                                                </Typography>
-                                                                {item.description && (
-                                                                    <Typography variant="body2">{item.description}</Typography>
-                                                                )}
-                                                            </CardContent>
-                                                            <CardActions sx={{ justifyContent: "flex-end" }}>
-                                                                <Button size="small" variant="outlined" onClick={() => dispatch(setIsEditModalOpen({ name: item.name || item.benefit || item.advantage || item.issue || item.revenue_stream || item.segment_name || item.impact || item.solution || item.strategic_positions, des: item?.description, id: item?.id, agentName: sec.split('.')[0].toUpperCase() }))}>
-                                                                    Edit
-                                                                </Button>
-                                                                <Button size='small' variant="outlined" color="error" onClick={() => handleDelete(item.id, sec.split('.')[0].toUpperCase())}>
-                                                                    Delete
-                                                                </Button>
-                                                            </CardActions>
-                                                        </Card>
-
-                                                    ))}
-                                                </Box>
+        <Box >
+            <Typography variant="h4" component="h1" gutterBottom>{currentIdeaName}</Typography>
+            <Box sx={{ display: 'flex', padding: '0', gap: 2 }}>
+                <Box sx={{ flexGrow: 1 }}>
+                    <SidebarTabs
+                        currentStep={currentStep}
+                        setCurrentStep={setCurrentStep}
+                        currentIdeaName={currentIdeaName}
+                        handleProceedToNext={proceedNext}
+                        agentName={fetchAgenstsData && Object.keys(fetchAgenstsData)} />
+                    {currentStep === 0 ? <Grid container spacing={2}>
+                        {fetchAgenstsData && Object.keys(fetchAgenstsData).map((sec, idx) => {
+                            const secIdentifier = fetchAgenstsData[sec];
+                            return (
+                                <Grid item xs={12} key={idx}>
+                                    <Accordion onChange={() => setActiveIndex(idx)}>
+                                        <AccordionSummary expandIcon={<ExpandMore />}>
+                                            <Box display="flex" alignItems="center">
+                                                {sec?.icon}
+                                                <Typography variant="h6" ml={1}>
+                                                    {sec.replace('_agent.json', '').replace(/_/g, ' ').toUpperCase()}
+                                                </Typography>
                                             </Box>
-                                        ))}
-                                    </AccordionDetails>
-                                </Accordion>
-                            </Grid>
-                        )
-                    })}
-                </Grid> : currentStep === 1 ? (
-                    <Grid container spacing={2}><PersonaCards currentIdeaName={currentIdeaName} />
-                    </Grid>
-                ) : currentStep === 2 ? (<Grid>
-                    <MoSCoWScreen currentIdeaName={currentIdeaName} />
-                </Grid>) :
-                    <Grid>
-                        <EpicTabs currentIdeaName={currentIdeaName} />
-                    </Grid>
-                }
+                                        </AccordionSummary>
+                                        <AccordionDetails>
+                                            {Object.entries(secIdentifier || {}).map(([sectionKey, items]) => (
+                                                <Box key={sectionKey}>
+                                                    <Box
+                                                        sx={{
+                                                            display: 'flex',
+                                                            justifyContent: 'end',
+                                                            alignItems: 'center',
+                                                            mb: 1,
+                                                        }}
+                                                    >
+                                                        <Button size="small" variant="outlined">
+                                                            Add
+                                                        </Button>
+                                                    </Box>
+                                                    <Box component="ul" sx={{
+                                                        display: 'flex',
+                                                        flexWrap: 'wrap',
+                                                        gap: 2,
+                                                        pl: 0,
+                                                        listStyle: 'none',
+                                                    }}>
+                                                        {items.map((item, i) => (
+                                                            <Card
+                                                                key={i}
+                                                                sx={{
+                                                                    width: {
+                                                                        xs: '100%',
+                                                                        sm: '48%',
+                                                                        md: '30%',
+                                                                    },
+                                                                    padding: 1,
+                                                                    borderRadius: 4,
+                                                                    boxShadow: 6,
+                                                                }}>
+                                                                <CardContent>
+                                                                    <Typography variant="body1" fontWeight="bold">
+                                                                        {item.name || item.benefit || item.advantage || item.issue || item.revenue_stream || item.segment_name || item.impact || item.solution || item.strategic_positions}
+                                                                    </Typography>
+                                                                    {item.description && (
+                                                                        <Typography variant="body2">{item.description}</Typography>
+                                                                    )}
+                                                                </CardContent>
+                                                                <CardActions sx={{ justifyContent: "flex-end" }}>
+                                                                    <IconButton
+                                                                        onClick={() => dispatch(setIsEditModalOpen({ name: item.name || item.benefit || item.advantage || item.issue || item.revenue_stream || item.segment_name || item.impact || item.solution || item.strategic_positions, des: item?.description, id: item?.id, agentName: sec.split('.')[0].toUpperCase() }))}
+                                                                        sx={{
+                                                                            backgroundColor: 'white',
+                                                                            boxShadow: 1,
+                                                                            '&:hover': {
+                                                                                backgroundColor: '#f5f5f5',
+                                                                            },
+                                                                        }}
+                                                                        size="small"
+                                                                    >
+                                                                        <EditIcon fontSize="small" />
+                                                                    </IconButton>
+
+                                                                    <IconButton
+                                                                        onClick={() => handleDelete(item.id, sec.split('.')[0].toUpperCase())}
+                                                                        sx={{
+                                                                            backgroundColor: 'white',
+                                                                            boxShadow: 1,
+                                                                            '&:hover': {
+                                                                                backgroundColor: '#f5f5f5',
+                                                                            },
+                                                                        }}
+                                                                        size="small"
+                                                                        color='error'
+                                                                    >
+                                                                        <DeleteIcon fontSize="small" />
+                                                                    </IconButton>
+                                                                </CardActions>
+                                                            </Card>
+
+                                                        ))}
+                                                    </Box>
+                                                </Box>
+                                            ))}
+                                        </AccordionDetails>
+                                    </Accordion>
+                                </Grid>
+                            )
+                        })}
+                    </Grid> : currentStep === 1 ? (
+                        <Grid container spacing={2}><PersonaCards currentIdeaName={currentIdeaName} />
+                        </Grid>
+                    ) : currentStep === 2 ? (<Grid>
+                        <MoSCoWScreen currentIdeaName={currentIdeaName} />
+                    </Grid>) :
+                        <Grid>
+                            <EpicTabs currentIdeaName={currentIdeaName} />
+                        </Grid>
+                    }
+                </Box>
+                <EditModal />
+                <ConfirmDeleteModal
+                    open={open}
+                    onClose={() => setOpen(false)}
+                    onConfirm={handleDeleteCofirm}
+                    itemName={deleteDetails} />
             </Box>
-            <EditModal />
-            <ConfirmDeleteModal
-                open={open}
-                onClose={() => setOpen(false)}
-                onConfirm={handleDeleteCofirm}
-                itemName={deleteDetails} />
         </Box>
+
     );
 };
 

@@ -3,7 +3,8 @@ import {
     Tabs, Tab, Box, Typography, Avatar, Card, CardContent, Accordion, AccordionSummary,
     AccordionDetails, Divider, useTheme,
     CircularProgress,
-    IconButton
+    IconButton,
+    Button
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import EditIcon from '@mui/icons-material/Edit';
@@ -51,20 +52,16 @@ function PersonaCard({ user, handleDeletePersona, deleteDetails, setDeleteDetail
                             sx={{ width: 64, height: 64, border: `2px solid ${theme.palette.primary.main}` }}
                         />
                         <Box>
-                            <Typography variant="h5" fontWeight="bold">{user?.name}</Typography>
                             <Typography variant="body2" color="text.secondary">
                                 {user?.role || 'N/A'}
                             </Typography>
                         </Box>
                     </Box>
-
                     <Typography variant="body2" sx={{ mb: 2 }}>
                         <strong>Decision Making Power:</strong> {user?.decision_making_power} &nbsp;&nbsp;|&nbsp;&nbsp;
                         <strong>Experience Level:</strong> {user?.experience_level}
                     </Typography>
-
                     <Divider sx={{ my: 2 }} />
-
                     <Accordion elevation={0} >
                         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                             <Typography variant="subtitle1">Pain Points</Typography>
@@ -186,7 +183,6 @@ export default function PersonaCards({ currentIdeaName }) {
     const handleDeletePersona = () => {
         deletePersonaEntry()
     }
-    console.log(userInfo, 'This is info');
 
     return (
         <Box sx={{ width: '100%' }}>
@@ -196,27 +192,25 @@ export default function PersonaCards({ currentIdeaName }) {
                 variant="scrollable"
                 scrollButtons="auto"
                 centered
-                TabIndicatorProps={{
-                    sx: {
-                        height: 4,
-                        borderRadius: 2,
-                    }
-                }}
+                textColor="primary"
+                indicatorColor="primary"
                 sx={{
-                    px: 2,
+                    backgroundColor: '#f5f7fa',
+                    borderRadius: 2,
+                    boxShadow: 2,
+                    marginTop: '10px',
                     '& .MuiTab-root': {
+                        fontWeight: 'bold',
                         textTransform: 'none',
-                        minWidth: 120,
-                        px: 1,
-                        py: 0.5,
-                        borderRadius: 2,
-                        transition: '0.3s',
+                        borderRadius: 1,
+                        transition: 'all 0.3s ease',
                         '&:hover': {
-                            // bgcolor: alpha(theme.palette.primary.main, 0.1),
+                            backgroundColor: '#e3f2fd',
                         }
                     },
                     '& .Mui-selected': {
-                        // bgcolor: alpha(theme.palette.primary.main, 0.15),
+                        color: '#1976d2 !important',
+                        backgroundColor: '#e3f2fd',
                     }
                 }}
             >
@@ -224,11 +218,22 @@ export default function PersonaCards({ currentIdeaName }) {
                     <Tab
                         key={idx}
                         label={user?.role}
-                        icon={<Avatar src='https://images.unsplash.com/photo-1670202602615-ec8ee6c2ea7a?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fG1pbmlvbnN8ZW58MHx8MHx8fDA%3D' sx={{ width: 32, height: 32 }} />}
+                        icon={<Avatar />}
                         iconPosition="start"
                     />
                 ))}
             </Tabs>
+            <Box
+                sx={{
+                    display: 'flex',
+                    justifyContent: 'end',
+                    alignItems: 'center',
+                    mt:2,
+                    mb: 1,
+                }}
+            >
+                <Button size="small" variant="outlined">Add Persona</Button>
+            </Box>
             {PERSONALoading ? (
                 <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }} >
                     <CircularProgress color="primary" />
