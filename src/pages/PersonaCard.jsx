@@ -32,119 +32,89 @@ function PersonaCard({ user, handleDeletePersona, deleteDetails, setDeleteDetail
     }
 
     return (
-        <Box position="relative">
-            <Card
-                sx={{
-                    width: '100%',
-                    maxWidth: 700,
-                    margin: 'auto',
-                    mt: 4,
-                    borderRadius: 4,
-                    boxShadow: 6,
-                    bgcolor: theme.palette.background.default,
-                    overflow: 'hidden',
-                }}
-            >
-                <CardContent>
-                    <Box display="flex" alignItems="center" gap={2} mb={2}>
-                        <Avatar
-                            alt={user?.role}
-                            sx={{ width: 64, height: 64, border: `2px solid ${theme.palette.primary.main}` }}
-                        />
-                        <Box>
-                            <Typography variant="body2" color="text.secondary">
-                                {user?.role || 'N/A'}
-                            </Typography>
-                        </Box>
+        <Card
+            sx={{
+                width: '100%',
+                maxWidth: 700,
+                margin: 'auto',
+                mt: 4,
+                borderRadius: 4,
+                boxShadow: 6,
+                bgcolor: theme.palette.background.default,
+                overflow: 'hidden',
+            }}
+        >
+            <CardContent>
+                <Box display="flex" justifyContent="flex-end" gap={1} mb={1}>
+                    <IconButton
+                        onClick={handlePersonaEdit}
+                        sx={{
+                            backgroundColor: 'white',
+                            boxShadow: 1,
+                            '&:hover': {
+                                backgroundColor: '#f5f5f5',
+                            },
+                        }}
+                        size="small"
+                    >
+                        <EditIcon fontSize="small" />
+                    </IconButton>
+                    <IconButton
+                        onClick={handlePersonaDelete}
+                        sx={{
+                            backgroundColor: 'white',
+                            boxShadow: 1,
+                            '&:hover': {
+                                backgroundColor: '#f5f5f5',
+                            },
+                            color: 'red'
+                        }}
+                        size="small"
+                    >
+                        <DeleteIcon fontSize="small" />
+                    </IconButton>
+                </Box>
+                <Box display="flex" alignItems="center" gap={2} mb={2}>
+                    <Avatar
+                        alt={user?.role}
+                        sx={{ width: 64, height: 64, border: `2px solid ${theme.palette.primary.main}` }}
+                    />
+                    <Box>
+                        <Typography variant="body2" color="text.secondary">
+                            {user?.role || 'N/A'}
+                        </Typography>
                     </Box>
-                    <Typography variant="body2" sx={{ mb: 2 }}>
-                        <strong>Decision Making Power:</strong> {user?.decision_making_power} &nbsp;&nbsp;|&nbsp;&nbsp;
-                        <strong>Experience Level:</strong> {user?.experience_level}
-                    </Typography>
-                    <Divider sx={{ my: 2 }} />
-                    <Accordion elevation={0} >
+                </Box>
+                <Typography variant="body2" sx={{ mb: 2 }}>
+                    <strong>Decision Making Power:</strong> {user?.decision_making_power} &nbsp;&nbsp;|&nbsp;&nbsp;
+                    <strong>Experience Level:</strong> {user?.experience_level}
+                </Typography>
+
+                <Divider sx={{ my: 2 }} />
+                {[['Pain Points', user?.pain_points], ['Motivations', user?.motivations], ['Key Solutions', user?.key_solutions]].map(([title, items]) => (
+                    <Accordion key={title} elevation={0}>
                         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                            <Typography variant="subtitle1">Pain Points</Typography>
+                            <Typography variant="subtitle1">{title}</Typography>
                         </AccordionSummary>
                         <AccordionDetails>
                             <ul style={{ paddingLeft: '1rem' }}>
-                                {user?.pain_points?.map((point, idx) => (
+                                {items?.map((item, idx) => (
                                     <li key={idx}>
-                                        <Typography variant="body2">{point}</Typography>
+                                        <Typography variant="body2">{item}</Typography>
                                     </li>
                                 ))}
                             </ul>
                         </AccordionDetails>
                     </Accordion>
-                    <Accordion elevation={0}>
-                        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                            <Typography variant="subtitle1">Motivations</Typography>
-                        </AccordionSummary>
-                        <AccordionDetails>
-                            <ul style={{ paddingLeft: '1rem' }}>
-                                {user?.motivations?.map((motivation, idx) => (
-                                    <li key={idx}>
-                                        <Typography variant="body2">{motivation}</Typography>
-                                    </li>
-                                ))}
-                            </ul>
-                        </AccordionDetails>
-                    </Accordion>
-                    <Accordion elevation={0}>
-                        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                            <Typography variant="subtitle1">Key Solutions</Typography>
-                        </AccordionSummary>
-                        <AccordionDetails>
-                            <ul style={{ paddingLeft: '1rem' }}>
-                                {user?.key_solutions?.map((solution, idx) => (
-                                    <li key={idx}>
-                                        <Typography variant="body2">{solution}</Typography>
-                                    </li>
-                                ))}
-                            </ul>
-                        </AccordionDetails>
-                    </Accordion>
-                </CardContent>
-            </Card>
-            <IconButton
-                onClick={handlePersonaEdit}
-                sx={{
-                    position: 'absolute',
-                    top: 12,
-                    right: 330,
-                    backgroundColor: 'white',
-                    boxShadow: 1,
-                    '&:hover': {
-                        backgroundColor: '#f5f5f5',
-                    },
-                }}
-                size="small"
-            >
-                <EditIcon fontSize="small" />
-            </IconButton>
-            <IconButton
-                onClick={handlePersonaDelete}
-                sx={{
-                    position: 'absolute',
-                    top: 12,
-                    right: 290,
-                    backgroundColor: 'white',
-                    boxShadow: 1,
-                    '&:hover': {
-                        backgroundColor: '#f5f5f5',
-                    },
-                    color: 'red'
-                }}
-                size="small"
-            >
-                <DeleteIcon fontSize="small" />
-            </IconButton>
+                ))}
+            </CardContent>
             <ConfirmDeleteModal
                 open={open}
                 onClose={() => setOpen(false)}
                 onConfirm={handleDeletePersona}
-                itemName={deleteDetails} />
-        </Box>
+                itemName={deleteDetails}
+            />
+        </Card>
     );
 }
 
@@ -228,7 +198,7 @@ export default function PersonaCards({ currentIdeaName }) {
                     display: 'flex',
                     justifyContent: 'end',
                     alignItems: 'center',
-                    mt:2,
+                    mt: 2,
                     mb: 1,
                 }}
             >
