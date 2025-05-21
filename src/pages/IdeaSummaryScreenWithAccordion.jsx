@@ -221,6 +221,7 @@ const IdeaSummaryScreenWithAccordion = () => {
                                                         }}
                                                     >
                                                         <IconButton
+                                                            onClick={() => dispatch(setIsEditModalOpen({ taskName: sec.replace('_agent.json', '').replace(/_/g, ' ').toUpperCase() }))}
                                                             sx={{
                                                                 backgroundColor: 'white',
                                                                 boxShadow: 1,
@@ -231,7 +232,7 @@ const IdeaSummaryScreenWithAccordion = () => {
                                                             size="small"
                                                             color='primary'
                                                         >
-                                                            <AddIcon fontSize='large'/>
+                                                            <AddIcon fontSize='large' />
                                                         </IconButton>
                                                     </Box>
                                                     <Box component="ul" sx={{
@@ -259,12 +260,12 @@ const IdeaSummaryScreenWithAccordion = () => {
                                                                         {item.name || item.benefit || item.advantage || item.issue || item.revenue_stream || item.segment_name || item.impact || item.solution || item.strategic_positions}
                                                                     </Typography>
                                                                     {item.description && (
-                                                                        <Typography variant="body2"color="textSecondary">{item.description}</Typography>
+                                                                        <Typography variant="body2" color="textSecondary">{item.description}</Typography>
                                                                     )}
                                                                 </CardContent>
                                                                 <CardActions sx={{ justifyContent: "flex-end" }}>
                                                                     <IconButton
-                                                                        onClick={() => dispatch(setIsEditModalOpen({ name: item.name || item.benefit || item.advantage || item.issue || item.revenue_stream || item.segment_name || item.impact || item.solution || item.strategic_positions, des: item?.description, id: item?.id, agentName: sec.split('.')[0].toUpperCase() }))}
+                                                                        onClick={() => dispatch(setIsEditModalOpen({ name: item.name || item.benefit || item.advantage || item.issue || item.revenue_stream || item.segment_name || item.impact || item.solution || item.strategic_positions, des: item?.description, id: item?.id, agentName: sec.split('.')[0].toUpperCase(), taskName: sec.replace('_agent.json', '').replace(/_/g, ' ').toUpperCase() }))}
                                                                         sx={{
                                                                             backgroundColor: 'white',
                                                                             boxShadow: 1,

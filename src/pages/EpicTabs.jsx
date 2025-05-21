@@ -15,7 +15,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import { useDispatch, useSelector } from 'react-redux';
-import { setIsEditModalOpen, setProductEditModal } from '../redux/silces/HomeScreenSlice';
+import { setProductEditModal } from '../redux/silces/HomeScreenSlice';
 import ProductRoadmapEditModal from '../components/ProductRoadmapEditModal'
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 
@@ -77,7 +77,26 @@ function EpicTabs({ currentIdeaName }) {
                 </Box>
             ) : (
                 <>
-                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', alignContent: 'center', mb: 2 }}>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={handlePublish}
+                            sx={{ marginRight: 2 }}
+                            disabled={publishJiraLoading}
+                        >
+                            Publish Jira
+                            {publishJiraLoading && (
+                                <CircularProgress
+                                    size={20}
+                                    color="inherit"
+                                    sx={{
+                                        top: '50%',
+                                        transform: 'translateY(-50%)',
+                                    }}
+                                />
+                            )}
+                        </Button>
                         <IconButton
                             sx={{
                                 backgroundColor: 'white',
@@ -126,10 +145,25 @@ function EpicTabs({ currentIdeaName }) {
                                 }}
                             >
                                 <CardContent>
-                                    <Typography variant="h6" color='primary'>{epic.epic_title}</Typography>
-                                    <Typography variant="body2" color="textSecondary">
-                                        {epic.description}
+                                    <Typography variant="h6" color="primary">
+                                        {epic.epic_title}
                                     </Typography>
+
+                                    {Array.isArray(epic.description) ? (
+                                        <ul style={{ paddingLeft: '1.25rem', margin: 0 }}>
+                                            {epic.description.map((item, index) => (
+                                                <li key={index}>
+                                                    <Typography variant="body2" color="textSecondary">
+                                                        {item}
+                                                    </Typography>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    ) : (
+                                        <Typography variant="body2" color="textSecondary">
+                                            {epic.description}
+                                        </Typography>
+                                    )}
                                 </CardContent>
                                 <Box
                                     sx={{
@@ -171,25 +205,6 @@ function EpicTabs({ currentIdeaName }) {
 
                         ))}
                     </Box>
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={handlePublish}
-                        sx={{ mt: 2, position: 'relative' }}
-                        disabled={publishJiraLoading}
-                    >
-                        Publish Jira
-                        {publishJiraLoading && (
-                            <CircularProgress
-                                size={20}
-                                color="inherit"
-                                sx={{
-                                    top: '50%',
-                                    transform: 'translateY(-50%)',
-                                }}
-                            />
-                        )}
-                    </Button>
                 </>
             )}
             <ProductRoadmapEditModal handleUpdateEpic={handleUpdateEpic} />

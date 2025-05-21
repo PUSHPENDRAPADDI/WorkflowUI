@@ -54,7 +54,7 @@ const EditModal = () => {
 
     return (
         <Dialog open={isEditModalOpen} onClose={handleClose} fullWidth maxWidth="sm">
-            <DialogTitle>Edit Content</DialogTitle>
+            <DialogTitle>{editData?.name ? 'Edit' : 'Add'} {editData?.taskName}</DialogTitle>
             <DialogContent>
                 <TextField
                     margin="dense"
