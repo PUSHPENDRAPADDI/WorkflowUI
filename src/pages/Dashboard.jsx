@@ -1,4 +1,4 @@
-import { Box, Grid, Typography, Card, CardMedia, CardContent, Chip, CircularProgress } from '@mui/material';
+import { Box, Grid, Typography, Card, CardContent, CircularProgress } from '@mui/material';
 import useApi from '../hooks/useApi';
 import { URLCONSTANTS } from '../constants/urlConstants';
 import { useEffect } from 'react';
@@ -40,26 +40,6 @@ const recentItems = [
     }
 ];
 
-const getTagColor = (tag) => {
-    switch (tag) {
-        case 'New':
-            return 'primary';
-        case 'Old':
-            return 'secondary';
-        case 'In Review':
-            return 'warning';
-        case 'Completed':
-        case 'Done':
-            return 'success';
-        case 'In Progress':
-            return 'info';
-        case 'Pending':
-            return 'error';
-        default:
-            return 'default';
-    }
-};
-
 const Dashboard = () => {
     const { data: fetchedConcept, loading: conceptLoading, error: conceptError, fetchData: fetchConcept } = useApi("GET_CONCEPTS", `${URLCONSTANTS.GET_CONCEPTS}`, "GET");
     const isLoading = useSelector((state) => state.homeScreenReducer.homeScreenLoader);
@@ -91,11 +71,9 @@ const Dashboard = () => {
                             alignItems: 'center',
                             justifyContent: 'center',
                             p: 2,
-                            // border: '1px solid #90caf9',
                             borderRadius: 2,
                             boxShadow: 3,
                             textAlign: 'center',
-                            // color: '#1976d2',
                             transition: '0.3s',
                             '&:hover': {
                                 backgroundColor: '#e3f2fd',
@@ -118,11 +96,9 @@ const Dashboard = () => {
                             alignItems: 'center',
                             justifyContent: 'center',
                             p: 2,
-                            // border: '1px solid #90caf9',
                             borderRadius: 2,
                             boxShadow: 3,
                             textAlign: 'center',
-                            // color: '#1976d2',
                             transition: '0.3s',
                             '&:hover': {
                                 backgroundColor: '#e3f2fd',
@@ -157,11 +133,9 @@ const Dashboard = () => {
                             alignItems: 'center',
                             justifyContent: 'center',
                             p: 2,
-                            // border: '1px solid #90caf9',
                             borderRadius: 2,
                             boxShadow: 3,
                             textAlign: 'center',
-                            // color: '#1976d2',
                             transition: '0.3s',
                             '&:hover': {
                                 backgroundColor: '#e3f2fd',

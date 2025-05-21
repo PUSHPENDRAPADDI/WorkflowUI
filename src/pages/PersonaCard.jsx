@@ -3,7 +3,8 @@ import {
     Tabs, Tab, Box, Typography, Avatar, Card, CardContent, Accordion, AccordionSummary,
     AccordionDetails, Divider, useTheme,
     CircularProgress,
-    IconButton
+    IconButton,
+    Grid
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import EditIcon from '@mui/icons-material/Edit';
@@ -44,7 +45,7 @@ function PersonaCard({ user, handleDeletePersona, deleteDetails, setDeleteDetail
         <Card
             sx={{
                 width: '100%',
-                maxWidth: 700,
+                maxWidth: 500,
                 margin: 'auto',
                 mt: 4,
                 borderRadius: 4,
@@ -129,7 +130,6 @@ function PersonaCard({ user, handleDeletePersona, deleteDetails, setDeleteDetail
 }
 
 export default function PersonaCards({ currentIdeaName }) {
-    const [activeTab, setActiveTab] = useState(0);
     const [deleteDetails, setDeleteDetails] = useState(null);
     const data = useSelector((state) => state.homeScreenReducer.personaEditDetails);
     const { data: fetchedPERSONAData, loading: PERSONALoading, error: PERSONAError, fetchData: fetchPERSONA } = useApi("PERSONA", `${URLCONSTANTS.GET_PARTICULAR_AGENT_RESPONSE + currentIdeaName}/persona_agent`, "GET");
@@ -146,10 +146,6 @@ export default function PersonaCards({ currentIdeaName }) {
 
     const { data: deletePersona, loading: deletePersonaLoading, error: deletePersonaError, fetchData: deletePersonaEntry } = useApi("UPDATEENTRY", `${URLCONSTANTS.DELETE_ENTRY + currentIdeaName}/persona_agent/${deleteDetails?.id}`, "DELETE");
 
-    const handleChange = (event, newValue) => {
-        setActiveTab(newValue);
-    };
-
     const userInfo = fetchedPERSONAData && fetchedPERSONAData.persona_agent.persona_agent;
 
     useEffect(() => {
@@ -163,48 +159,10 @@ export default function PersonaCards({ currentIdeaName }) {
     const handleDeletePersona = () => {
         deletePersonaEntry()
     }
+    console.log();
 
     return (
         <Box sx={{ width: '100%' }}>
-            <Tabs
-                value={activeTab}
-                onChange={handleChange}
-                variant="scrollable"
-                scrollButtons="auto"
-                centered
-                textColor="primary"
-                indicatorColor="primary"
-                sx={{
-                    backgroundColor: '#f5f7fa',
-                    borderRadius: 2,
-                    boxShadow: 2,
-                    marginTop: '10px',
-                    '& .MuiTab-root': {
-                        fontWeight: 'bold',
-                        textTransform: 'none',
-                        borderRadius: 1,
-                        transition: 'all 0.3s ease',
-                        '&:hover': {
-                            backgroundColor: '#e3f2fd',
-                        }
-                    },
-                    '& .Mui-selected': {
-                        color: '#1976d2 !important',
-                        backgroundColor: '#e3f2fd',
-                    }
-                }}
-            >
-                {userInfo && userInfo.map((user, idx) => (
-                    <Tab
-                        key={idx}
-                        label={user?.role}
-                        icon={<Avatar
-                            src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${users[idx]}`}
-                        />}
-                        iconPosition="start"
-                    />
-                ))}
-            </Tabs>
             <Box
                 sx={{
                     display: 'flex',
@@ -232,13 +190,21 @@ export default function PersonaCards({ currentIdeaName }) {
                 <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }} >
                     <CircularProgress color="primary" />
                 </Box >
-            ) :
-                <Box sx={{
-                    bgcolor: 'white',
-
-                }}>
-                    {userInfo && userInfo?.length > 0 && <PersonaCard user={userInfo[activeTab]} handleDeletePersona={handleDeletePersona} deleteDetails={deleteDetails} setDeleteDetails={setDeleteDetails} idx={activeTab} />}
-                </Box>}
+            ) : (
+                <Grid container spacing={2}>
+                    {userInfo?.map((user, idx) => (
+                        <Grid item xs={12} sm={6} md={4} key={user.id || idx}>
+                            <PersonaCard
+                                user={user}
+                                handleDeletePersona={handleDeletePersona}
+                                deleteDetails={deleteDetails}
+                                setDeleteDetails={setDeleteDetails}
+                                idx={idx}
+                            />
+                        </Grid>
+                    ))}
+                </Grid>
+            )}
             <PersonaEditModal handleEdit={handleEditPersona} />
         </Box>
     );

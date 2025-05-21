@@ -186,7 +186,7 @@ const IdeaSummaryScreenWithAccordion = () => {
 
     return (
         <Box >
-            <Typography variant="h4" component="h1" gutterBottom>{currentIdeaName}</Typography>
+            <Typography variant="h4" component="h1" gutterBottom>{currentIdeaName.replace(/_/g, ' ')}</Typography>
             <Box sx={{ display: 'flex', padding: '0', gap: 2 }}>
                 <Box sx={{ flexGrow: 1 }}>
                     <SidebarTabs
