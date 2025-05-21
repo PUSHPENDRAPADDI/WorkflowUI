@@ -53,7 +53,7 @@ const Header = () => {
         <img alt='logo' src={logo} width='150px' />
         <Box display="flex" alignItems="center" gap={1}>
           <Typography variant="subtitle1" onClick={handleMenuOpen} color="textPrimary">
-            John Wick
+            Arun
           </Typography>
           <IconButton onClick={handleMenuOpen} color="inherit" sx={{ p: 0 }}>
             <ArrowDropDownIcon />
@@ -65,7 +65,7 @@ const Header = () => {
             anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
             transformOrigin={{ vertical: 'top', horizontal: 'right' }}
           >
-            <MenuItem disabled>John Wick</MenuItem>
+            <MenuItem disabled>Arun</MenuItem>
             <MenuItem onClick={handleCreateAccount}>Create Account</MenuItem>
             <MenuItem onClick={handleLogout}>Logout</MenuItem>
           </Menu>

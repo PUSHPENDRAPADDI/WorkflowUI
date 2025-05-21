@@ -64,7 +64,7 @@ const EditModal = () => {
                     value={editData?.name || ""}
                     onChange={handleChange}
                 />
-                <TextField
+                {/* <TextField
                     margin="dense"
                     label="Description"
                     name="des"
@@ -74,7 +74,7 @@ const EditModal = () => {
                     maxRows={10}
                     value={editData?.des || ""}
                     onChange={handleChange}
-                />
+                /> */}
             </DialogContent>
             <DialogActions>
                 <Button onClick={handleClose} variant="outlined">Cancel</Button>

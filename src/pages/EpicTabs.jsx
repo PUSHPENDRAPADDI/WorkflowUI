@@ -148,7 +148,6 @@ function EpicTabs({ currentIdeaName }) {
                                     <Typography variant="h6" color="primary">
                                         {epic.epic_title}
                                     </Typography>
-
                                     {Array.isArray(epic.description) ? (
                                         <ul style={{ paddingLeft: '1.25rem', margin: 0 }}>
                                             {epic.description.map((item, index) => (

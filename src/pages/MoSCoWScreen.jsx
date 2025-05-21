@@ -110,7 +110,14 @@ const MoSCoWScreen = ({ currentIdeaName }) => {
                 <CircularProgress color="primary" />
             </Box >
         ) :
-            <Box >
+            <Box sx={{
+                backgroundColor: "#E3F2FD",
+                pt: 0,
+                pr: 1,
+                pb: 2,
+                pl: 1,
+                borderRadius:'10px'
+            }} >
                 <Box >
                     <Tabs
                         value={activeTab}

@@ -36,7 +36,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
     { label: 'Collections', icon: <Inventory2 color="primary" /> },
     { label: 'Commands', icon: <Terminal color="primary" /> },
     { label: 'Playbook', icon: <MenuBook color="primary" /> },
-    { label: 'Lean Business Canvas', icon: <ViewModule color="primary" /> },
+    { label: 'Product Engineering Workbench', icon: <ViewModule color="primary" /> },
     { label: 'Schema Mapper', icon: <Schema color="primary" /> },
     { label: 'Web utilities', icon: <Web color="primary" /> },
     { label: 'Self Service', icon: <Speed color="primary" /> },

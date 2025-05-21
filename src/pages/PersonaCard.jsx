@@ -45,7 +45,7 @@ function PersonaCard({ user, handleDeletePersona, deleteDetails, setDeleteDetail
         <Card
             sx={{
                 width: '100%',
-                maxWidth: 500,
+                // maxWidth: 450,
                 margin: 'auto',
                 mt: 4,
                 borderRadius: 4,

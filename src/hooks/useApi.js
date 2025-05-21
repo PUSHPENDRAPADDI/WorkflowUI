@@ -33,7 +33,7 @@ const useApi = (key, url, method = "GET") => {
             dispatch(apiSuccess({ key, data }));
         } catch (err) {
             const message = err.response?.data?.message || err.message || "Something went wrong";
-            showCustomToast("Failed", 'error')
+            // showCustomToast("Failed", 'error')
             dispatch(apiFailure({ key, error: message }));
         }
     };
