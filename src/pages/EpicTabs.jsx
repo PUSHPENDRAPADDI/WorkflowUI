@@ -8,6 +8,7 @@ import {
     CircularProgress,
     Button,
     IconButton,
+    Tabs, Tab
 } from '@mui/material';
 import useApi from '../hooks/useApi';
 import { URLCONSTANTS } from '../constants/urlConstants';
@@ -25,6 +26,7 @@ function EpicTabs({ currentIdeaName }) {
     const [epicsData, setEpicsData] = useState([])
     const [open, setOpen] = useState(false);
     const [deleteDetails, setDeleteDetails] = useState(null);
+    const [activeTab, setActiveTab] = useState('PHASE_1');
     const editData = useSelector((state) => state.homeScreenReducer.productEditModalData);
     const { data: fetchedEPICSData, loading: EPICSLoading, error: EPICSError, fetchData: fetchEPICS } = useApi("EPICS", `${URLCONSTANTS.GET_PARTICULAR_AGENT_RESPONSE + currentIdeaName}/jira_epic_agent`, "GET");
     const { data: publishJiraData, loading: publishJiraLoading, error: publishJiraError, fetchData: publishJiraEPICS } = useApi("UPDATEEPIC", `${URLCONSTANTS.PUBLISHJIRA + currentIdeaName}`, "POST");
@@ -39,6 +41,10 @@ function EpicTabs({ currentIdeaName }) {
         `${URLCONSTANTS.UPDATE_ENTRY + currentIdeaName}/${editData?.agentName}/${editData?.id}`,
         "PUT"
     );
+
+    const handleTabChange = (event, newValue) => {
+        setActiveTab(newValue);
+    };
 
     const handlePublish = () => {
         publishJiraEPICS();
@@ -63,11 +69,17 @@ function EpicTabs({ currentIdeaName }) {
     }
 
     const handleUpdateEpic = () => {
+        console.log(typeof editData.des === 'string' ? editData.des.split(',') : editData.des, 'THis is for edit');
         updateEntry({
             epic_title: editData.name,
-            description: editData.des
+            description: typeof editData.des === 'string' ? editData.des.split(',') : editData.des
         });
+
     }
+
+
+    const phaseKeys = Object.keys(epicsData || {});
+    const epicsForActiveTab = epicsData?.[activeTab] || [];
 
     return (
         <Container maxWidth="lg" sx={{ mt: 1 }}>
@@ -77,7 +89,8 @@ function EpicTabs({ currentIdeaName }) {
                 </Box>
             ) : (
                 <>
-                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', alignContent: 'center', mb: 2 }}>
+                    {/* Publish + Add buttons */}
+                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', mb: 2 }}>
                         <Button
                             variant="contained"
                             color="primary"
@@ -87,23 +100,14 @@ function EpicTabs({ currentIdeaName }) {
                         >
                             Publish Jira
                             {publishJiraLoading && (
-                                <CircularProgress
-                                    size={20}
-                                    color="inherit"
-                                    sx={{
-                                        top: '50%',
-                                        transform: 'translateY(-50%)',
-                                    }}
-                                />
+                                <CircularProgress size={20} color="inherit" sx={{ ml: 1 }} />
                             )}
                         </Button>
                         <IconButton
                             sx={{
                                 backgroundColor: 'white',
                                 boxShadow: 1,
-                                '&:hover': {
-                                    backgroundColor: '#f5f5f5',
-                                },
+                                '&:hover': { backgroundColor: '#f5f5f5' },
                             }}
                             size="small"
                             color='primary'
@@ -111,98 +115,127 @@ function EpicTabs({ currentIdeaName }) {
                             <AddIcon fontSize='large' />
                         </IconButton>
                     </Box>
-                    <Box
-                        sx={{
-                            display: 'flex',
-                            flexWrap: 'wrap',
-                            gap: 2,
-                            justifyContent: 'flex-start',
-                        }}
-                    >
-                        {epicsData?.map((epic, index) => (
-                            <Card
-                                key={index}
-                                variant="outlined"
-                                sx={{
-                                    width: '32%',
-                                    padding: 1,
-                                    borderRadius: 3,
-                                    boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
-                                    transition: "transform 0.2s, box-shadow 0.2s",
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    justifyContent: 'space-between',
+                    <Box sx={{
+                        backgroundColor: "#E3F2FD",
+                        pt: 0,
+                        pr: 1,
+                        pb: 2,
+                        pl: 1,
+                        borderRadius: '10px'
+                    }}>
+                        <Tabs
+                            value={activeTab}
+                            onChange={handleTabChange}
+                            variant="scrollable"
+                            scrollButtons="auto"
+                            textColor="primary"
+                            indicatorColor="primary"
+                            sx={{
+                                backgroundColor: '#f5f7fa',
+                                borderRadius: 2,
+                                boxShadow: 2,
+                                px: 2,
+                                '& .MuiTab-root': {
+                                    fontWeight: 'bold',
+                                    textTransform: 'none',
+                                    mx: 1,
+                                    borderRadius: 1,
+                                    transition: 'all 0.3s ease',
                                     '&:hover': {
-                                        transform: "translateY(-5px)",
-                                        boxShadow: "0 6px 25px rgba(0, 0, 0, 0.15)"
-                                    },
-                                    '@media (max-width: 900px)': {
-                                        width: '48%',
-                                    },
-                                    '@media (max-width: 600px)': {
-                                        width: '100%',
-                                    },
-                                }}
-                            >
-                                <CardContent>
-                                    <Typography variant="h6" color="primary">
-                                        {epic.epic_title}
-                                    </Typography>
-                                    {Array.isArray(epic.description) ? (
-                                        <ul style={{ paddingLeft: '1.25rem', margin: 0 }}>
-                                            {epic.description.map((item, index) => (
-                                                <li key={index}>
-                                                    <Typography variant="body2" color="textSecondary">
-                                                        {item}
-                                                    </Typography>
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    ) : (
-                                        <Typography variant="body2" color="textSecondary">
-                                            {epic.description}
-                                        </Typography>
-                                    )}
-                                </CardContent>
-                                <Box
+                                        backgroundColor: '#e3f2fd',
+                                    }
+                                },
+                                '& .Mui-selected': {
+                                    color: '#1976d2 !important',
+                                    backgroundColor: '#e3f2fd',
+                                }
+                            }}
+                        >
+                            {phaseKeys.map((phaseKey) => (
+                                <Tab key={phaseKey} label={phaseKey.replace('_', ' ')} value={phaseKey} />
+                            ))}
+                        </Tabs>
+                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, marginTop: '10px' }}>
+                            {epicsForActiveTab.map((epic, index) => (
+                                <Card
+                                    key={index}
+                                    variant="outlined"
                                     sx={{
-                                        display: 'flex',
-                                        justifyContent: 'flex-end',
-                                        gap: 1,
+                                        width: '32%',
                                         padding: 1,
+                                        borderRadius: 3,
+                                        boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
+                                        transition: "transform 0.2s, box-shadow 0.2s",
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        justifyContent: 'space-between',
+                                        '&:hover': {
+                                            transform: "translateY(-5px)",
+                                            boxShadow: "0 6px 25px rgba(0, 0, 0, 0.15)"
+                                        },
+                                        '@media (max-width: 900px)': {
+                                            width: '48%',
+                                        },
+                                        '@media (max-width: 600px)': {
+                                            width: '100%',
+                                        },
                                     }}
                                 >
-                                    <IconButton
-                                        onClick={() => dispatch(setProductEditModal({ name: epic.epic_title, des: epic?.description, agentName: 'jira_epic_agent', id: epic?.id }))}
-                                        sx={{
-                                            backgroundColor: 'white',
-                                            boxShadow: 1,
-                                            '&:hover': {
-                                                backgroundColor: '#f5f5f5',
-                                            },
-                                        }}
-                                        size="small"
-                                    >
-                                        <EditIcon fontSize="small" />
-                                    </IconButton>
-                                    <IconButton
-                                        onClick={() => handleDelete(epic)}
-                                        sx={{
-                                            backgroundColor: 'white',
-                                            boxShadow: 1,
-                                            '&:hover': {
-                                                backgroundColor: '#f5f5f5',
-                                            },
-                                            color: 'red',
-                                        }}
-                                        size="small"
-                                    >
-                                        <DeleteIcon fontSize="small" />
-                                    </IconButton>
-                                </Box>
-                            </Card>
-
-                        ))}
+                                    <CardContent>
+                                        <Typography variant="h6" color="primary">
+                                            {epic.epic_title}
+                                        </Typography>
+                                        {Array.isArray(epic.description) ? (
+                                            <ul style={{ paddingLeft: '1.25rem', margin: 0 }}>
+                                                {epic.description.map((item, idx) => (
+                                                    <li key={idx}>
+                                                        <Typography variant="body2" color="textSecondary">
+                                                            {item}
+                                                        </Typography>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        ) : (
+                                            <Typography variant="body2" color="textSecondary">
+                                                {epic.description}
+                                            </Typography>
+                                        )}
+                                    </CardContent>
+                                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, padding: 1 }}>
+                                        <IconButton
+                                            onClick={() =>
+                                                dispatch(setProductEditModal({
+                                                    name: epic.epic_title,
+                                                    des: epic?.description,
+                                                    agentName: 'jira_epic_agent',
+                                                    id: epic?.id
+                                                }))
+                                            }
+                                            sx={{
+                                                backgroundColor: 'white',
+                                                boxShadow: 1,
+                                                '&:hover': { backgroundColor: '#f5f5f5' }
+                                            }}
+                                            size="small"
+                                        >
+                                            <EditIcon fontSize="small" />
+                                        </IconButton>
+                                        <IconButton
+                                            onClick={() => handleDelete(epic)}
+                                            sx={{
+                                                backgroundColor: 'white',
+                                                boxShadow: 1,
+                                                '&:hover': { backgroundColor: '#f5f5f5' },
+                                                color: 'red'
+                                            }}
+                                            size="small"
+                                        >
+                                            <DeleteIcon fontSize="small" />
+                                        </IconButton>
+                                    </Box>
+                                </Card>
+                            ))}
+                        </Box>
                     </Box>
                 </>
             )}

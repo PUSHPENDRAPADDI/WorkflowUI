@@ -29,8 +29,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import FeedbackModal from '../components/FeedbackModal';
-import jsPDF from "jspdf";
-import "jspdf-autotable";
+import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 
 const sidebarSteps = [
     'Idea Elaboration',
@@ -183,40 +182,61 @@ const IdeaSummaryScreenWithAccordion = () => {
         });
     }
 
-    const generatePDF = () => {
-        const doc = new jsPDF();
-        let y = 10;
-        const addSection = (title, data) => {
-            doc.setFontSize(16);
-            doc.setTextColor("#1e88e5");
-            doc.text(title, 14, y);
-            y += 8;
-            const columns = [
-                { header: "ID", dataKey: "id" },
-                { header: "Name", dataKey: "name" },
-                { header: "Description", dataKey: "description" }
-            ];
-            doc.autoTable({
-                startY: y,
-                headStyles: { fillColor: "#2196f3" },
-                bodyStyles: { fontSize: 10 },
-                margin: { left: 14, right: 14 },
-                theme: "striped",
-                columns: columns,
-                body: data,
-                styles: { overflow: "linebreak" },
-                didDrawPage: (data) => {
-                    y = data.cursor.y + 10;
-                }
+    const generatePDF = async () => {
+        const pdfDoc = await PDFDocument.create();
+        let page = pdfDoc.addPage([595, 842]);
+        const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+        const fontSize = 12;
+        const titleFontSize = 14;
+        const subtitleFontSize = 12;
+        const marginLeft = 50;
+        const indent = 20;
+        let y = 800;
+        const lineHeight = 15;
+        const pageHeight = 842;
+        const bottomMargin = 50;
+        const drawText = (text, x, y, size = fontSize, color = rgb(0, 0, 0)) => {
+            page.drawText(text, {
+                x,
+                y,
+                size,
+                font,
+                color,
             });
         };
-        Object.entries(fetchAgenstsData).forEach(([key, value]) => {
-            const title = key
-                .replace(/_/g, " ")
-                .replace(/\b\w/g, (char) => char.toUpperCase());
-            addSection(title, value);
-        });
-        doc.save("data_report.pdf");
+        const addNewPage = () => {
+            page = pdfDoc.addPage([595, 842]);
+            y = 800;
+        };
+        for (const [agentKey, value] of Object.entries(fetchAgenstsData)) {
+            const agentTitle = agentKey.replace(/_/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase());
+            if (y < bottomMargin + 4 * lineHeight) addNewPage();
+            drawText(agentTitle, marginLeft, y, titleFontSize, rgb(0.12, 0.53, 0.9));
+            y -= lineHeight * 1.5;
+            const innerKey = Object.keys(value)[0];
+            const innerArray = value[innerKey];
+            if (Array.isArray(innerArray) && innerArray.length > 0) {
+                for (const row of innerArray) {
+                    if (y < bottomMargin + 3 * lineHeight) addNewPage();
+                    drawText(`Name: ${row.name ?? 'N/A'}`, marginLeft + indent, y, subtitleFontSize, rgb(0.1, 0.1, 0.1));
+                    y -= lineHeight;
+                    const description = row.description ?? 'No description available';
+                    drawText(`Description: ${description}`, marginLeft + indent * 2, y, fontSize, rgb(0.3, 0.3, 0.3));
+                    y -= lineHeight * 1.5;
+                }
+            } else {
+                if (y < bottomMargin + lineHeight) addNewPage();
+                drawText('No data available', marginLeft + indent, y);
+                y -= lineHeight;
+            }
+            y -= lineHeight;
+        }
+        const pdfBytes = await pdfDoc.save();
+        const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'data_report.pdf';
+        link.click();
     };
 
     return (
@@ -233,137 +253,148 @@ const IdeaSummaryScreenWithAccordion = () => {
                         handleProceedToNext={proceedNext}
                         agentName={fetchAgenstsData && Object.keys(fetchAgenstsData)}
                     />
-                    <Box sx={{ display: 'flex', justifyItems: 'end' }}>                    <IconButton
-                        size="small"
-                        color="primary"
-                        onClick={generatePDF}
-                    >
-                        Download PDF
-                    </IconButton></Box>
                     {currentStep === 0 ? (
-                        <Grid container spacing={2}>
-                            {fetchAgenstsData &&
-                                Object.keys(fetchAgenstsData).map((sec, idx) => {
-                                    const secIdentifier = fetchAgenstsData[sec];
-                                    return Object.entries(secIdentifier || {}).map(([sectionKey, items], innerIdx) => (
-                                        <Grid item xs={12} sm={6} md={4} key={`${idx}-${innerIdx}`}>
-                                            <Card
-                                                sx={{
-                                                    height: '100%',
-                                                    padding: 2,
-                                                    borderRadius: 4,
-                                                    boxShadow: 6,
-                                                    boxSizing: 'border-box',
-                                                }}
-                                            >
-                                                <CardContent>
-                                                    <Box
-                                                        sx={{
-                                                            display: 'flex',
-                                                            alignItems: 'center',
-                                                            justifyContent: 'space-between',
-                                                            mb: 2,
-                                                        }}
-                                                    >
-                                                        <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center' }}>
-                                                            {sec.replace('_agent.json', '').replace(/_/g, ' ').toUpperCase()}
-                                                        </Typography>
-
-                                                        <IconButton
-                                                            onClick={() =>
-                                                                dispatch(
-                                                                    setIsEditModalOpen({
-                                                                        taskName: sec.replace('_agent.json', '').replace(/_/g, ' ').toUpperCase(),
-                                                                    })
-                                                                )
-                                                            }
+                        <Box sx={{ mb: 3 }}>
+                            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    onClick={generatePDF}
+                                    sx={{
+                                        borderRadius: 2,
+                                        px: 3,
+                                        py: 1,
+                                        boxShadow: 2,
+                                        textTransform: 'none',
+                                        fontWeight: 'bold',
+                                    }}
+                                >
+                                    Download PDF
+                                </Button>
+                            </Box>
+                            <Grid container spacing={2}>
+                                {fetchAgenstsData &&
+                                    Object.keys(fetchAgenstsData).map((sec, idx) => {
+                                        const secIdentifier = fetchAgenstsData[sec];
+                                        return Object.entries(secIdentifier || {}).map(([sectionKey, items], innerIdx) => (
+                                            <Grid item xs={12} sm={6} md={4} key={`${idx}-${innerIdx}`}>
+                                                <Card
+                                                    sx={{
+                                                        height: '100%',
+                                                        padding: 2,
+                                                        borderRadius: 4,
+                                                        boxShadow: 6,
+                                                        boxSizing: 'border-box',
+                                                    }}
+                                                >
+                                                    <CardContent>
+                                                        <Box
                                                             sx={{
-                                                                backgroundColor: 'white',
-                                                                boxShadow: 1,
-                                                                '&:hover': {
-                                                                    backgroundColor: '#f5f5f5',
-                                                                },
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                justifyContent: 'space-between',
+                                                                mb: 2,
                                                             }}
-                                                            size="small"
-                                                            color="primary"
                                                         >
-                                                            <AddIcon fontSize="medium" />
-                                                        </IconButton>
-                                                    </Box>
-                                                    <Box component="ul" sx={{ pl: 2, m: 0 }}>
-                                                        {items.map((item, i) => (
-                                                            <Box
-                                                                key={i}
-                                                                component="li"
+                                                            <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center' }}>
+                                                                {sec.replace('_agent.json', '').replace(/_/g, ' ').toUpperCase()}
+                                                            </Typography>
+                                                            <IconButton
+                                                                onClick={() =>
+                                                                    dispatch(
+                                                                        setIsEditModalOpen({
+                                                                            taskName: sec.replace('_agent.json', '').replace(/_/g, ' ').toUpperCase(),
+                                                                        })
+                                                                    )
+                                                                }
                                                                 sx={{
-                                                                    display: 'flex',
-                                                                    justifyContent: 'space-between',
-                                                                    alignItems: 'center',
-                                                                    mb: 1,
-                                                                    pr: 1,
-                                                                    px: 2,
-                                                                    py: 1.5,
-                                                                    borderRadius: 2,
-                                                                    backgroundColor: '#f9f9f9',
-                                                                    boxShadow: '0 2px 5px rgba(0, 0, 0, 0.08)',
+                                                                    backgroundColor: 'white',
+                                                                    boxShadow: 1,
+                                                                    '&:hover': {
+                                                                        backgroundColor: '#f5f5f5',
+                                                                    },
                                                                 }}
+                                                                size="small"
+                                                                color="primary"
                                                             >
-                                                                <Typography
-                                                                    variant="body2"
-                                                                    fontWeight="bold"
-                                                                    color="primary"
-                                                                    sx={{ maxWidth: '70%' }}
+                                                                <AddIcon fontSize="medium" />
+                                                            </IconButton>
+                                                        </Box>
+                                                        <Box component="ul" sx={{ pl: 2, m: 0 }}>
+                                                            {items.map((item, i) => (
+                                                                <Box
+                                                                    key={i}
+                                                                    component="li"
+                                                                    sx={{
+                                                                        display: 'flex',
+                                                                        justifyContent: 'space-between',
+                                                                        alignItems: 'center',
+                                                                        mb: 1,
+                                                                        pr: 1,
+                                                                        px: 2,
+                                                                        py: 1.5,
+                                                                        borderRadius: 2,
+                                                                        backgroundColor: '#f9f9f9',
+                                                                        boxShadow: '0 2px 5px rgba(0, 0, 0, 0.08)',
+                                                                    }}
                                                                 >
-                                                                    {item.name}
-                                                                </Typography>
-                                                                <Box>
-                                                                    <IconButton
-                                                                        onClick={() =>
-                                                                            dispatch(
-                                                                                setIsEditModalOpen({
-                                                                                    name: item.name,
-                                                                                    id: item?.id,
-                                                                                    agentName: sec.split('.')[0],
-                                                                                    taskName: sec.replace('_agent.json', '').replace(/_/g, ' ').toUpperCase(),
-                                                                                })
-                                                                            )
-                                                                        }
-                                                                        sx={{
-                                                                            backgroundColor: 'white',
-                                                                            marginRight: '5px',
-                                                                            boxShadow: 1,
-                                                                            '&:hover': {
-                                                                                backgroundColor: '#f5f5f5',
-                                                                            },
-                                                                        }}
-                                                                        size="small"
+                                                                    <Typography
+                                                                        variant="body2"
+                                                                        fontWeight="bold"
+                                                                        color="primary"
+                                                                        sx={{ maxWidth: '70%' }}
                                                                     >
-                                                                        <EditIcon fontSize="small" />
-                                                                    </IconButton>
-                                                                    <IconButton
-                                                                        onClick={() => handleDelete(item.id, sec.split('.')[0])}
-                                                                        sx={{
-                                                                            backgroundColor: 'white',
-                                                                            boxShadow: 1,
-                                                                            '&:hover': {
-                                                                                backgroundColor: '#f5f5f5',
-                                                                            },
-                                                                        }}
-                                                                        size="small"
-                                                                        color="error"
-                                                                    >
-                                                                        <DeleteIcon fontSize="small" />
-                                                                    </IconButton>
+                                                                        {item.name}
+                                                                    </Typography>
+                                                                    <Box>
+                                                                        <IconButton
+                                                                            onClick={() =>
+                                                                                dispatch(
+                                                                                    setIsEditModalOpen({
+                                                                                        name: item.name,
+                                                                                        id: item?.id,
+                                                                                        agentName: sec.split('.')[0],
+                                                                                        taskName: sec.replace('_agent.json', '').replace(/_/g, ' ').toUpperCase(),
+                                                                                    })
+                                                                                )
+                                                                            }
+                                                                            sx={{
+                                                                                backgroundColor: 'white',
+                                                                                marginRight: '5px',
+                                                                                boxShadow: 1,
+                                                                                '&:hover': {
+                                                                                    backgroundColor: '#f5f5f5',
+                                                                                },
+                                                                            }}
+                                                                            size="small"
+                                                                        >
+                                                                            <EditIcon fontSize="small" />
+                                                                        </IconButton>
+                                                                        <IconButton
+                                                                            onClick={() => handleDelete(item.id, sec.split('.')[0])}
+                                                                            sx={{
+                                                                                backgroundColor: 'white',
+                                                                                boxShadow: 1,
+                                                                                '&:hover': {
+                                                                                    backgroundColor: '#f5f5f5',
+                                                                                },
+                                                                            }}
+                                                                            size="small"
+                                                                            color="error"
+                                                                        >
+                                                                            <DeleteIcon fontSize="small" />
+                                                                        </IconButton>
+                                                                    </Box>
                                                                 </Box>
-                                                            </Box>
-                                                        ))}
-                                                    </Box>
-                                                </CardContent>
-                                            </Card>
-                                        </Grid>
-                                    ));
-                                })}
-                        </Grid>
+                                                            ))}
+                                                        </Box>
+                                                    </CardContent>
+                                                </Card>
+                                            </Grid>
+                                        ));
+                                    })}
+                            </Grid>
+                        </Box>
                     ) : currentStep === 1 ? (
                         <Grid container spacing={2}>
                             <PersonaCards currentIdeaName={currentIdeaName} />
