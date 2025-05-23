@@ -1,16 +1,18 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import {
     TextField,
     Button,
     Dialog,
     DialogTitle,
     DialogContent,
-    DialogActions
+    DialogActions,
+    Tooltip
 } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { setIsFeedbackOpen } from '../redux/silces/HomeScreenSlice';
 import useApi from '../hooks/useApi';
 import { URLCONSTANTS } from '../constants/urlConstants';
+import mammoth from "mammoth";
 
 const FeedbackModal = ({ handleEditFeature }) => {
     const dispatch = useDispatch();
@@ -37,6 +39,28 @@ const FeedbackModal = ({ handleEditFeature }) => {
         onClose();
     }
 
+    const handleFileUpload = async (event) => {
+        const file = event.target.files?.[0];
+        if (!file) return;
+
+        const fileType = file.name.split('.').pop().toLowerCase();
+
+        try {
+            if (fileType === 'txt') {
+                const text = await file.text();
+                setFeedback(text)
+            } else if (fileType === 'docx') {
+                const arrayBuffer = await file.arrayBuffer();
+                const result = await mammoth.extractRawText({ arrayBuffer });
+                setFeedback(result.value);
+            } else {
+                console.warn("Unsupported file type:", fileType);
+            }
+        } catch (error) {
+            console.error("Error processing file:", error);
+        }
+    };
+
     return (
         <Dialog open={feedbackModalOpen} onClose={onClose} fullWidth maxWidth="sm">
             <DialogTitle>Feedback</DialogTitle>
@@ -58,16 +82,30 @@ const FeedbackModal = ({ handleEditFeature }) => {
                 <Button onClick={onClose} color="secondary">
                     Cancel
                 </Button>
+                <Tooltip title="Only .txt and .docx files are supported">
+                    <Button
+                        variant="outlined"
+                        component="label"
+                        color="primary"
+                    >
+                        Upload Doc
+                        <input
+                            type="file"
+                            hidden
+                            onChange={handleFileUpload}
+                            accept=".txt,.docx"
+                        />
+                    </Button>
+                </Tooltip>
                 <Button
                     variant="contained"
-                    onClick={() => { handleSave() }}
+                    onClick={handleSave}
                     color="primary"
                 >
                     Submit
                 </Button>
             </DialogActions>
         </Dialog>
-
     );
 };
 
